@@ -6,6 +6,7 @@ from torch.utils.data import DataLoader
 import open_clip
 import os
 from pathlib import Path
+from datetime import datetime
 import yaml
 
 from src.datasets.ParquetIterableDataset import ParquetImageDataset, multi_model_collate
@@ -68,6 +69,9 @@ def main(config, target_dir, output_dir, file_list=None):
                 parquet_files = [line.strip() for line in f if line.strip().endswith('.parquet')]
             logging.info(f"Loaded {len(parquet_files)} Parquet files from {file_list}")
     
+    processed_files_log = os.path.join(
+        output_dir, f"processed_files_rank{global_rank}_{datetime.now().strftime('%Y%m%d%H%M%S')}.log"
+    )
     dataset = ParquetImageDataset(
         parquet_files,
         col_uuid="uuid",
@@ -78,7 +82,7 @@ def main(config, target_dir, output_dir, file_list=None):
         read_batch_size=config.get("read_batch_size", 128),
         read_columns=config.get("read_columns", ["uuid", "original_size", "resized_size", "image"]),
         stagger=False,
-        processed_files_log=None
+        processed_files_log=processed_files_log
     )
 
     collate_fn = multi_model_collate if len(models) > 1 else None
