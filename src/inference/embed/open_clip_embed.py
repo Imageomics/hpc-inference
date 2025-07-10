@@ -130,7 +130,7 @@ def main(config, target_dir, output_dir, file_list=None):
             t2 = time.perf_counter()
             all_embeds[model_key].append(embeds.cpu().numpy())
             t3 = time.perf_counter()
-            del images  # Free memory
+            del images, embeds  # Free memory
         else:
             batch_dict = {k: v.to(device, non_blocking=True) for k, v in data.items()}
             t1 = time.perf_counter()
@@ -141,7 +141,7 @@ def main(config, target_dir, output_dir, file_list=None):
             for key in models:
                 all_embeds[key].append(embeds[key].cpu().numpy())
             t3 = time.perf_counter()
-            del batch_dict  # Free memory
+            del batch_dict, embeds  # Free memory
 
         torch.cuda.empty_cache()  # Clear GPU memory
         all_uuids.extend(uuids)
