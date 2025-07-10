@@ -3,15 +3,20 @@ import threading
 import torch
 import numpy as np
 from torch.utils.data import DataLoader
-import open_clip
 import os
 from pathlib import Path
 from datetime import datetime
-import yaml
 
 from ...datasets.parquet_dataset import ParquetImageDataset, multi_model_collate
 from ...utils.common import format_time, decode_image, save_emb_to_parquet, load_config
 from ...utils import profiling
+
+try:
+    import open_clip
+    OPENCLIP_AVAILABLE = True
+except ImportError:
+    OPENCLIP_AVAILABLE = False
+    open_clip = None
 
 import logging
 # Configure logging
@@ -21,8 +26,20 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
+def check_openclip_dependencies():
+    """Check if OpenCLIP dependencies are available."""
+    if not OPENCLIP_AVAILABLE:
+        raise ImportError(
+            "OpenCLIP is not installed. Install with: "
+            "pip install 'hpc-inference[openclip]'"
+        )
+
 @torch.no_grad()
 def main(config, target_dir, output_dir, file_list=None):
+
+    # Check required dependencies
+    check_openclip_dependencies()
+
     # =============== #
     # ---- Setup ----
     # =============== #
@@ -213,15 +230,55 @@ def main(config, target_dir, output_dir, file_list=None):
     
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="CLIP Batch Inference with Config File")
-    parser.add_argument("config", type=str, help="Path to YAML config file")
+    parser = argparse.ArgumentParser(description="CLIP Batch Embedding with Config File or Command Line Arguments")
     parser.add_argument("target_dir", type=str, help="Directory containing images for inference")
     parser.add_argument("output_dir", type=str, help="Directory to save output embeddings")
+    parser.add_argument("--config", type=str, default=None, help="Path to YAML config file (optional)")
     parser.add_argument("--file_list", type=str, default=None,
-                        help="File containing list of Parquet files to process. If None, all Parquet files in target_dir are processed.")
+                        help="File containing list of Parquet files to process")
+    
+    # Model configuration arguments (used when no config file provided)
+    parser.add_argument("--model_name", type=str, default="ViT-B-32", 
+                        help="OpenCLIP model name (default: ViT-B-32)")
+    parser.add_argument("--pretrained", type=str, default="openai",
+                        help="Pretrained weights (default: openai)")
+    
+    # Compute arguments
+    parser.add_argument("--batch_size", type=int, default=16, help="Batch size for inference")
+    parser.add_argument("--num_workers", type=int, default=28, help="Number of dataloader workers")
+    parser.add_argument("--prefetch_factor", type=int, default=16, help="Dataloader prefetch factor")
+    parser.add_argument("--read_batch_size", type=int, default=128, help="Parquet read batch size")
+    parser.add_argument("--max_rows_per_file", type=int, default=10000, help="Max rows per output file")
+    parser.add_argument("--out_prefix", type=str, default="embed_results", help="Output file prefix")
+    parser.add_argument("--read_columns", type=str, nargs="+", 
+                        default=["uuid", "original_size", "resized_size", "image"],
+                        help="Columns to read from Parquet files (default: uuid original_size resized_size image)")
+    
     args = parser.parse_args()
 
-    config = load_config(args.config)
+    # Load config or create from arguments
+    if args.config:
+        config = load_config(args.config)
+        print(f"Using config file: {args.config}")
+    else:
+        # Create config from command line arguments
+        config = {
+            "models": {
+                "default": {
+                    "name": args.model_name,
+                    "pretrained": args.pretrained
+                }
+            },
+            "batch_size": args.batch_size,
+            "num_workers": args.num_workers,
+            "prefetch_factor": args.prefetch_factor,
+            "read_batch_size": args.read_batch_size,
+            "max_rows_per_file": args.max_rows_per_file,
+            "out_prefix": args.out_prefix,
+            "read_columns": args.read_columns
+        }
+        print("Using command line arguments (no config file provided)")
+
     main(
         config,
         target_dir=args.target_dir,
