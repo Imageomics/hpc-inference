@@ -50,23 +50,106 @@ Many batch inference workflows suffer from poor GPU utilization due to I/O bottl
 - CUDA-capable GPU (for inference)
 - PyTorch >= 1.11.0
 
-### Install from Source
+### Quick Installation Guide
 
+| Use Case | Installation Command | What's Included |
+|----------|---------------------|-----------------|
+| **Dataset Processing** | `pip install -e .` | Customized Torch Datasets |
+| **OpenCLIP Inference** | `pip install -e ".[openclip]"` | Core + OpenCLIP embedding support|
+| **Everything** | `pip install -e ".[all]"` | All Features |
+| **Development** | `pip install -e ".[dev]"` | Core + Dev Tools |
+
+### Installation Options
+
+`HPC-Inference` uses a modular dependency structure to minimize installation requirements based on your use case.
+
+#### Core Package (Recommended Start)
 ```bash
 # Clone the repository
 git clone https://github.com/Imageomics/hpc-inference.git
 cd hpc-inference
 
-# Install the package
+# Standard installation - includes datasets, utilities, and profiling
 pip install -e .
+```
 
-# Or with development dependencies
+**What's included:**
+- ✅ High-performance dataset loaders (`ParquetImageDataset`, `ImageFolderDataset`)
+- ✅ Utility functions (`load_config`, `decode_image`, `save_emb_to_parquet`)
+- ✅ Performance profiling and monitoring
+- ✅ Resource usage tracking and visualization
+
+**Use cases:** Custom inference pipelines, dataset processing, performance optimization
+
+#### OpenCLIP Inference Support
+```bash
+# Core package + OpenCLIP embedding generation
+pip install -e ".[openclip]"
+```
+
+**Additional features:**
+- ✅ OpenCLIP model support for vision-language embeddings
+- ✅ Ready-to-use embedding generation scripts
+- ✅ SLURM job templates for HPC deployment
+
+**Use cases:** Large-scale embedding generation, vision-language research
+
+#### Complete Installation
+```bash
+# All current and future model support
+pip install -e ".[all]"
+```
+
+**Use cases:** Research groups wanting all capabilities
+
+#### Development Installation
+```bash
+# For contributors and package developers
 pip install -e ".[dev]"
+```
+
+**Additional tools:** pytest, black, ruff, mypy, pre-commit hooks
+
+### Verify Installation
+
+Check what features are available in your installation:
+
+```python
+import hpc_inference
+
+# Print installation status
+hpc_inference.print_installation_guide()
+
+# Or check programmatically
+features = hpc_inference.list_available_features()
+print(f"Available features: {features}")
+```
+
+**Example output:**
+```
+HPC-Inference Installation Status:
+================================
+✅ Core (datasets, utils, profiling): Available
+❌ OpenCLIP: Missing
+
+To enable OpenCLIP: pip install 'hpc-inference[openclip]'
+To install everything: pip install 'hpc-inference[all]'
+```
+
+### Upgrading
+
+```bash
+# Upgrade to latest version
+cd hpc-inference
+git pull
+pip install -e ".[your-extras]"  # e.g., .[openclip] or .[all]
 ```
 
 ## Quick Start
 
 ### Use Case 1: Custom Dataset Processing
+
+**Installation required:** Core package (`pip install -e .`)
 
 For users who want to leverage the high-performance dataset loaders for their own inference or training pipelines.
 
@@ -114,6 +197,8 @@ for uuids, images in dataloader:
 ```
 
 ### Use Case 2: OpenCLIP Batch Embedding Generation
+
+**Installation required:** OpenCLIP support (`pip install -e ".[openclip]"`)
 
 For users who want to generate embeddings from images using OpenCLIP models at scale. 
 
@@ -219,7 +304,56 @@ hpc-inference/
 
 ## Troubleshooting
 
-TODO: list out common issues
+### Installation Issues
+
+**ImportError: No module named 'open_clip'**
+```bash
+# Install OpenCLIP support
+pip install -e ".[openclip]"
+```
+
+**ImportError: No module named 'hpc_inference'**
+```bash
+# Ensure package is installed in development mode
+pip install -e .
+```
+
+**ModuleNotFoundError when running SLURM jobs**
+```bash
+# Check your SLURM script has proper environment activation
+module load cuda/12.4.1
+source /path/to/your/venv/bin/activate
+
+# Verify package is installed in the activated environment
+pip list | grep hpc-inference
+```
+
+### Feature Availability Issues
+
+**Check what's installed:**
+```python
+import hpc_inference
+hpc_inference.print_installation_guide()
+```
+
+**Missing features:**
+- **No profiling plots:** Core installation includes all profiling features
+- **OpenCLIP not available:** Install with `pip install -e ".[openclip]"`
+
+### Performance Issues
+
+**Out of GPU Memory:**
+- Reduce `batch_size` in config
+- Reduce `prefetch_factor`
+
+**Slow I/O Performance:**
+- Increase `num_workers`
+- Increase `read_batch_size`
+- Use SSD storage for input data
+
+**Uneven Load Distribution:**
+- Set `evenly_distribute: true` in dataset initialization
+- Check file size distribution in your data
 
 ## License
 
