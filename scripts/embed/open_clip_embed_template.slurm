@@ -16,6 +16,9 @@
 module load cuda/VERSION                      # [REQUIRED] Load CUDA module (e.g., cuda/12.4.1)
 source /path/to/your/venv/bin/activate        # [REQUIRED] Activate your Python virtual environment
 
+# === Ensure package is installed ===
+# Make sure hpc-inference package is installed in your environment
+
 which python                                  # Print Python path for debugging
 
 # === Set config and data paths ===
@@ -30,7 +33,10 @@ FILE_LIST="/path/to/your/file_list"           # [OPTIONAL] File with list of Par
 #   2. TARGET_DIR:  Directory with input data
 #   3. OUTPUT_DIR:  Directory for output embeddings
 #   4. (optional) --file_list: File with list of Parquet files to process (overrides TARGET_DIR)
-srun python -m src.inference.embed.open_clip_embed \
+#
+# Alternative: If you have installed the package with entry points, you can use:
+# srun hpc-embed "${CONFIG_FILE}" "${TARGET_DIR}" "${OUTPUT_DIR}" --file-list "${FILE_LIST}"
+srun python -m hpc_inference.inference.embed.open_clip_embed \
     "${CONFIG_FILE}" \
     "${TARGET_DIR}" \
     "${OUTPUT_DIR}" \
@@ -63,3 +69,7 @@ srun python -m src.inference.embed.open_clip_embed \
 # OUTPUT_DIR:          Directory where output embeddings will be written.
 # FILE_LIST:           [Optional] Path to a file listing specific Parquet files to process.
 #                      If provided, only files in this list will be processed; otherwise, all Parquet files in TARGET_DIR are used.
+#
+# PACKAGE SETUP:       Ensure the hpc-inference package is installed:
+#                      cd /path/to/sci_hpc_batch_inference && pip install -e .
+#                      This installs the package in development mode with all dependencies.

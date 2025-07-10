@@ -1,0 +1,121 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hpc-inference"
+dynamic = ["version"]
+description = "High-performance computing solution for efficient batch inference on large-scale image datasets"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    { name = "Net Zhang", email = "zhang.11091@osu.edu" },
+]
+keywords = [
+    "machine-learning",
+    "computer-vision", 
+    "hpc",
+    "batch-inference",
+    "embeddings",
+    "pytorch",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: System :: Distributed Computing",
+]
+
+dependencies = [
+    "torch>=1.11.0",
+    "torchvision>=0.12.0", 
+    "open-clip-torch>=2.20.0",
+    "pyarrow>=12.0.0",
+    "pandas>=1.5.0",
+    "pillow>=9.0.0",
+    "pyyaml>=6.0",
+    "matplotlib>=3.5.0",
+    "psutil>=5.9.0",
+    "tqdm>=4.64.0",
+    "numpy>=1.21.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+docs = [
+    "sphinx>=6.0.0",
+    "sphinx-rtd-theme>=1.2.0",
+    "myst-parser>=2.0.0",
+]
+all = [
+    "hpc-inference[dev,docs]",
+]
+
+[project.urls]
+Homepage = "https://github.com/yourusername/hpc-inference"
+Documentation = "https://hpc-inference.readthedocs.io"
+Repository = "https://github.com/yourusername/hpc-inference"
+Changelog = "https://github.com/yourusername/hpc-inference/blob/main/CHANGELOG.md"
+"Bug Tracker" = "https://github.com/yourusername/hpc-inference/issues"
+
+[tool.hatch.version]
+path = "src/hpc_inference/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hpc_inference"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/tests", 
+    "/docs",
+    "/scripts",
+    "/configs",
+    "/README.md",
+    "/LICENSE",
+]
+
+# Development tools configuration
+[tool.ruff]
+target-version = "py38"
+line-length = 88
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501", "F401"]
+
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["F401", "F811"]
+
+[tool.black]
+line-length = 88
+target-version = ["py38"]
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --cov=hpc_inference --cov-report=term-missing"
+
+[tool.coverage.run]
+source = ["src/hpc_inference"]
+omit = ["*/tests/*"]

@@ -9,9 +9,9 @@ from pathlib import Path
 from datetime import datetime
 import yaml
 
-from src.datasets.ParquetIterableDataset import ParquetImageDataset, multi_model_collate
-from src.utils import format_time, decode_image, save_emb_to_parquet
-import src.profiling as profiling
+from ...datasets.parquet_dataset import ParquetImageDataset, multi_model_collate
+from ...utils.common import format_time, decode_image, save_emb_to_parquet, load_config
+from ...utils import profiling
 
 import logging
 # Configure logging
@@ -20,10 +20,6 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[logging.StreamHandler()]
 )
-
-def load_config(config_path):
-    with open(config_path, "r") as f:
-        return yaml.safe_load(f)
 
 @torch.no_grad()
 def main(config, target_dir, output_dir, file_list=None):

@@ -2,6 +2,7 @@ import numpy as np
 import logging
 from PIL import Image
 import torch
+import yaml
 
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -12,6 +13,18 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[logging.StreamHandler()]
 )
+
+def load_config(config_path):
+    """Load YAML configuration file.
+    
+    Args:
+        config_path (str): Path to YAML configuration file
+        
+    Returns:
+        dict: Parsed configuration
+    """
+    with open(config_path, "r") as f:
+        return yaml.safe_load(f)
 
 def format_time(seconds):
     m, s = divmod(seconds, 60)
