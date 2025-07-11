@@ -1,0 +1,85 @@
+# =============================================================================
+# Configuration File for Batch Image Embedding from Image Folders
+# =============================================================================
+# This configuration is optimized for processing image files directly from
+# a directory structure.
+# -----------------------------------------------------------------------------
+
+# ---------------------------
+# Model Configurations
+# ---------------------------
+# List one or more models to use for embedding.
+# For OpenCLIP models, see: https://github.com/mlfoundations/open_clip#pretrained-models
+models:
+  vit_b_32:
+    name: ViT-B-32
+    pretrained: openai
+  # Uncomment to add more models for multi-model processing
+  # vit_l_14:
+  #   name: ViT-L-14
+  #   pretrained: laion2b_s32b_b82k
+  # bioclip:
+  #   name: hf-hub:imageomics/bioclip
+  #   pretrained: null
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 32          # Number of images per batch (adjust based on GPU memory)
+num_workers: 28         # Number of worker processes for data loading
+prefetch_factor: 32     # Number of batches prefetched by each worker
+
+# ---------------------------
+# Image Processing Settings
+# ---------------------------
+validate_images: false  # Set to true to validate all images can be opened with PIL
+                        # Slower startup but catches corrupted files
+
+# How to generate unique IDs from image file paths
+uuid_mode: filename     # Options:
+                        # - "filename": image001.jpg
+                        # - "relative": subfolder/image001.jpg
+                        # - "fullpath": /full/path/to/image001.jpg
+                        # - "hash": MD5 hash of full path
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true  # Distribute files based on size for load balancing
+stagger: false           # Stagger worker start times to reduce file system load
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_rows_per_file: 50000      # Maximum number of embeddings per output file
+out_prefix: image_embeds      # Prefix for output files
+
+# =============================================================================
+# IMAGE DIRECTORY REQUIREMENTS:
+# =============================================================================
+# Your image directory can have any structure:
+#
+# Flat structure:
+# /images/
+#   ├── image001.jpg
+#   ├── image002.png
+#   └── image003.jpeg
+#
+# Nested structure:
+# /images/
+#   ├── category1/
+#   │   ├── img1.jpg
+#   │   └── img2.png
+#   └── category2/
+#       ├── img3.jpg
+#       └── img4.png
+#
+# Supported formats: .jpg, .jpeg, .png, .bmp, .tif, .tiff, .webp
+# All images are automatically converted to RGB mode for processing.
+#
+# UUID GENERATION MODES:
+# - filename: Good for flat directories with unique filenames
+# - relative: Good for nested directories where path info is important
+# - fullpath: Good when you need absolute path traceability
+# - hash: Good for very long paths or when you want anonymized IDs
+# =============================================================================

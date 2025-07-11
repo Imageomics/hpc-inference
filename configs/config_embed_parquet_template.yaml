@@ -1,0 +1,89 @@
+# =============================================================================
+# Configuration File for Batch Image Embedding from Parquet Files
+# =============================================================================
+# This configuration is optimized for processing Parquet files containing
+# encoded image data with metadata.
+# -----------------------------------------------------------------------------
+
+# ---------------------------
+# Model Configurations
+# ---------------------------
+# List one or more models to use for embedding.
+# For OpenCLIP models, see: https://github.com/mlfoundations/open_clip#pretrained-models
+models:
+  bioclip:
+    name: hf-hub:imageomics/bioclip
+    pretrained: null
+  # Uncomment to add more models for multi-model processing
+  # vit_b_32:
+  #   name: ViT-B-32
+  #   pretrained: openai
+  # vit_l_14:
+  #   name: ViT-L-14
+  #   pretrained: laion2b_s32b_b82k
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 32          # Number of images per batch (adjust based on GPU memory)
+num_workers: 28         # Number of worker processes for data loading
+prefetch_factor: 32     # Number of batches prefetched by each worker
+
+# ---------------------------
+# Parquet-Specific Settings
+# ---------------------------
+read_batch_size: 256    # Number of rows to read from Parquet at a time
+                        # Larger values = more memory usage but potentially faster I/O
+
+# Columns to read from Parquet files (must exist in your data)
+read_columns:
+  - uuid              # [REQUIRED] Unique identifier for each image
+  - image             # [REQUIRED] Encoded image bytes (JPEG, PNG, etc.)
+  - original_size     # [OPTIONAL] Original image dimensions
+  - resized_size      # [OPTIONAL] Resized image dimensions
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true  # Distribute files based on size for load balancing
+stagger: false           # Stagger worker start times to reduce I/O congestion
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_rows_per_file: 50000    # Maximum number of embeddings per output file
+out_prefix: parquet_embeds  # Prefix for output files
+
+# =============================================================================
+# PARQUET DATA REQUIREMENTS:
+# =============================================================================
+# Your Parquet files must contain:
+# 1. 'uuid' column: Unique string identifier for each image
+# 2. 'image' column: Image data encoded as bytes (from PIL Image.save() to BytesIO)
+# 3. Optional metadata columns as specified in read_columns
+#
+# Example of creating compatible Parquet data:
+# ```python
+# import io
+# from PIL import Image
+# import pandas as pd
+# import pyarrow.parquet as pq
+# 
+# # Encode image to bytes
+# img = Image.open('image.jpg')
+# img_bytes = io.BytesIO()
+# img.save(img_bytes, format='JPEG')
+# img_bytes = img_bytes.getvalue()
+# 
+# # Create DataFrame
+# df = pd.DataFrame({
+#     'uuid': ['img_001'],
+#     'image': [img_bytes],
+#     'original_size': [(1024, 768)],
+#     'resized_size': [(224, 224)]
+# })
+# 
+# # Save to Parquet
+# df.to_parquet('images.parquet')
+# ```
+# =============================================================================
