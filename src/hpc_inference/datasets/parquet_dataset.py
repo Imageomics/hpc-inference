@@ -1,14 +1,19 @@
 import os
-from collections import defaultdict
 import random
 import time
+from collections import defaultdict
 from datetime import datetime
-import logging
+from typing import Optional, Union, Dict, Callable, List, Any, Tuple, Iterator
+from pathlib import Path
 
 import torch
 from torch.utils.data import IterableDataset, get_worker_info
 from torchvision import transforms
 import pyarrow.parquet as pq
+import pandas as pd
+
+import logging
+from ..utils.distributed import assign_files_to_rank
 
 # Configure logging
 logging.basicConfig(
@@ -17,317 +22,330 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-def assign_files_to_rank(rank, world_size, parquet_files, evenly_distribute=True):
-    """
-    Assign files to the current rank based on the world size.
-    This method ensures that each rank gets a unique set of files to process.
-    The files can be distributed evenly based on their size (LPT algorithm) or simply by their order.
-    This is useful for large datasets where some files may be significantly larger than others.
-
-    Args:
-        rank (int): Current process rank.
-        world_size (int): Total number of processes.
-        parquet_files (List[str]): List of file paths.
-        evenly_distribute (bool): Whether to distribute files evenly based on size.
-
-    Returns:
-        List[str]: File paths assigned to the given rank.
-    """
-
-    if not evenly_distribute:
-        return parquet_files[rank::world_size]
-
-    # Get file sizes
-    file_sizes = [(f, os.path.getsize(f)) for f in parquet_files]
-    # Sort files by size
-    file_sizes.sort(key=lambda x: x[1], reverse=True)
-
-    assignments = defaultdict(list)
-    load_per_rank = [0] * world_size
-
-    for fpath, size in file_sizes:
-        min_rank = load_per_rank.index(min(load_per_rank))
-        assignments[min_rank].append(fpath)
-        load_per_rank[min_rank] += size
-    
-    return assignments[rank]
-
-def multi_model_collate(batch):
-    """
-    Collate function for batches where each sample is (uuid, {model_name: tensor, ...}).
-    Returns:
-        uuids: list of uuids
-        batch_dict: dict of {model_name: batch_tensor}
-    """
-    uuids, processed_list = zip(*batch)  # unzip the batch
-    batch_dict = {}
-    # Use keys from the first processed dict (assumes all have the same keys)
-    for key in processed_list[0]:
-        # Stack tensors for each model key
-        batch_dict[key] = torch.stack([d[key] for d in processed_list])
-    return list(uuids), batch_dict
-
 class ParquetImageDataset(IterableDataset):
     """
-    An IterableDataset that reads images from Parquet files in a distributed manner.
-    Each worker reads a subset of the files based on its rank and world size.
-    The dataset yields tuples of (uuid, image) where uuid is the unique identifier
-    for the image and image is a transformed tensor.
-    The dataset can be used with PyTorch's DataLoader for distributed inference & training.
+    Loads images from Parquet files in a streaming fashion, with support for distributed processing.
+    - Reads image data from Parquet files containing encoded image bytes
+    - Supports distributed processing with rank-based file partitioning
+    - Supports multi-worker data loading within each rank
+    - Handles both single-model and multi-model preprocessing
+    - Provides staggered worker starts and load balancing
     
-    In PyTorch, there are two main types of datasets you can use with `torch.utils.data.DataLoader`:
-    1. `torch.utils.data.Dataset`: This is the standard dataset class that allows random access to data samples.
-       It is suitable for datasets that can fit into memory or can be indexed efficiently.
-       When using this type of dataset, the DataLoader can shuffle the data and load it in parallel using multiple workers.
-    2. `torch.utils.data.IterableDataset`: This is a more flexible dataset class that allows you to define a dataset that can be iterated over.
-       It is suitable for datasets that are too large to fit into memory or when the data is generated on-the-fly.
-       When using this type of dataset, the DataLoader will not shuffle the data, and each worker will get a different subset of the data to process.
-    
-    Use `Dataset` for random-access data.
-    Use `IterableDataset` for streaming or sequential data where random access is not possible or practical.
-    
-    Args:
-        parquet_files (list): List of paths to Parquet files.
-        col_uuid (str): Column name in the Parquet file that contains the UUIDs.
-        rank (int): Rank of the current process.
-        world_size (int): Total number of processes.
-        decode_fn (callable): Function to decode images from the Parquet file.
-        preprocess (callable): Preprocessing function to apply to the images.
-        read_batch_size (int, optional): Number of rows to read from each Parquet file at once. Defaults to 100.
-        processed_files_log (str, optional): Path to the log file for tracking processed files. Defaults to None.
-        evenly_distribute (bool, optional): Whether to distribute files evenly based on size. Defaults to True.
-        If False, files are distributed in a round-robin manner.
+    Returns (uuid, processed_data) tuples where:
+    - uuid: Unique identifier from the UUID column in Parquet
+    - processed_data: Tensor (single model) or dict of tensors (multi-model)
     """
+
     def __init__(
-        self, 
-        parquet_files, col_uuid, 
-        rank, world_size, 
-        decode_fn, preprocess, 
-        read_batch_size=100,
-        stagger=False,
-        read_columns=None, 
-        processed_files_log=None, evenly_distribute=True
-    ):
-        
-        self.col_uuid = col_uuid
+        self,
+        parquet_files: List[Union[str, Path]],
+        col_uuid: str = "uuid",
+        rank: Optional[int] = None,
+        world_size: Optional[int] = None,
+        evenly_distribute: bool = True,
+        decode_fn: Optional[Callable] = None,
+        preprocess: Optional[Union[Callable, Dict[str, Callable]]] = None,
+        read_batch_size: int = 128,
+        read_columns: Optional[List[str]] = None,
+        stagger: bool = False,
+        processed_files_log: Optional[Union[str, Path]] = None
+    ) -> None:
+        """
+        Args:
+            parquet_files: List of paths to Parquet files containing image data.
+            col_uuid: Name of the UUID column in Parquet files. Defaults to "uuid".
+            rank: Current process rank for distributed processing.
+            world_size: Total number of processes for distributed processing.
+            evenly_distribute: Whether to distribute files evenly based on size. Defaults to True.
+                If False, files are distributed in a round-robin manner.
+            decode_fn: Function to decode image bytes to PIL Image. Required for image processing.
+            preprocess: Transform(s) to apply to images.
+                - If callable: single model preprocessing
+                - If dict: {model_name: preprocess_fn} for multi-model
+                - If None: return decoded image as-is
+            read_batch_size: Number of rows to read from Parquet at a time. Defaults to 128.
+            read_columns: List of column names to read from Parquet. If None, reads all columns.
+                Typically includes ["uuid", "image", "original_size", "resized_size"].
+            stagger: Whether to stagger the start of each worker. Defaults to False.
+            processed_files_log: Path to log file for tracking processed files. Optional.
+        """
         def safe_decode_fn(row):
             try:
                 return decode_fn(row)
             except Exception as e:
                 logging.error(f"Error decoding row: {e}", exc_info=True)
                 return None
-        self.decode_fn = safe_decode_fn  # decode_image_to_pil function
-        self.preprocess = preprocess 
-        self.read_batch_size = read_batch_size
-        self.read_columns = read_columns
-        self.stagger = stagger  
-        self.rank = rank # Store rank for logging
-        self.world_size = world_size
 
-        self.files = assign_files_to_rank(
-            rank, world_size,
-            parquet_files, 
-            evenly_distribute=evenly_distribute
-        )
+        self.parquet_files: List[str] = [str(f) for f in parquet_files]
+        self.col_uuid: str = col_uuid
+        self.rank: int = rank or 0
+        self.world_size: int = world_size or 1
+        self.decode_fn: Optional[Callable] = safe_decode_fn
+        self.preprocess: Optional[Union[Callable, Dict[str, Callable]]] = preprocess
+        self.read_batch_size: int = read_batch_size
+        self.read_columns: Optional[List[str]] = read_columns
+        self.stagger: bool = stagger
+        self.processed_files_log: Optional[str] = str(processed_files_log) if processed_files_log else None
 
-        self.processed_files_log = processed_files_log or f"processed_files_rank{rank}_{datetime.now().strftime('%Y%m%d%H%M%S')}.log"
-        self.processed_files = self.load_processed_files()
-
-        logging.info(f"[Rank {self.rank}] Assigned {len(self.files)} parquet files")
-
-    def load_processed_files(self):
-        """Load processed files from the log."""
-        if os.path.exists(self.processed_files_log):
-            with open(self.processed_files_log, "r") as f:
-                return set(f.read().splitlines())
-        return set()
-
-    def save_processed_file(self, file_path):
-        """Save a processed file to the log file, creating the directory if needed."""
-        log_dir = os.path.dirname(self.processed_files_log)
-        if log_dir and not os.path.exists(log_dir):
-            os.makedirs(log_dir, exist_ok=True)
-
-        with open(self.processed_files_log, "a") as f:
-            f.write(f"{file_path}\n")
-
-    def parse_row(self, row):
-        image = self.decode_fn(row)
-        if image is None:
-            raise ValueError("Decoding failed, returned None")
-        if isinstance(self.preprocess, dict):
-            if len(self.preprocess) == 1:
-                # Only one model, return tensor directly
-                key = next(iter(self.preprocess))
-                processed = self.preprocess[key](image)
-            else:
-                processed = {k: fn(image) for k, fn in self.preprocess.items()}
+        # Apply rank-based file partitioning
+        if self.world_size > 1:
+            self.assigned_files = assign_files_to_rank(
+                self.rank, self.world_size, self.parquet_files, evenly_distribute
+            )
         else:
-            processed = self.preprocess(image)
-        uuid = row.get(self.col_uuid, 'UUID_MISSING')
-        return uuid, processed
+            self.assigned_files = self.parquet_files
 
-    def __iter__(self):
+        logging.info(f"Rank {self.rank} assigned {len(self.assigned_files)} out of {len(self.parquet_files)} Parquet files")
+
+        # Validate required parameters
+        if self.decode_fn is None:
+            logging.warning("No decode_fn provided. Images will not be decoded from bytes.")
+
+    def log_processed_file(self, file_path: str) -> None:
+        """Log a processed file to the log file if configured."""
+        if self.processed_files_log:
+            try:
+                with open(self.processed_files_log, 'a') as f:
+                    f.write(f"{datetime.now().isoformat()}: {file_path}\n")
+            except Exception as e:
+                logging.error(f"Failed to log processed file {file_path}: {e}")
+
+    def parse_batch_data(self, batch_df: pd.DataFrame) -> Iterator[Tuple[str, Any]]:
         """
-        Iterate over the dataset, yielding (uuid, image) tuples.
-        Each worker processes its assigned files and yields the results.
-        The dataset is designed to be used with PyTorch's DataLoader for distributed processing.
-        The function handles exceptions at various levels to ensure robust processing.
-        It skips already processed files and logs errors for individual rows and batches.
-        This allows for efficient and fault-tolerant processing of large datasets.
+        Parse a batch of data from Parquet DataFrame.
         
+        Args:
+            batch_df: DataFrame containing batch data from Parquet file.
+            
         Yields:
-            tuple: A tuple containing the UUID and the preprocessed image tensor.
+            Tuples of (uuid, processed_data) for each row in the batch.
+        """
+        for _, row in batch_df.iterrows():
+            try:
+                uuid = str(row[self.col_uuid])
+                
+                # Decode image if decode function is provided
+                if self.decode_fn and 'image' in row:
+                    img = self.decode_fn(row)
+                else:
+                    img = row.get('image', None)
+                
+                # Apply preprocessing
+                if img is None:
+                    logging.warning(f"No image data found for UUID {uuid}")
+                    continue
+                    
+                if self.preprocess is None:
+                    processed_data = img
+                elif isinstance(self.preprocess, dict):
+                    if len(self.preprocess) == 1:
+                        # Single model case - return tensor directly
+                        key = next(iter(self.preprocess))
+                        processed_data = self.preprocess[key](img)
+                    else:
+                        # Multi-model case - return dict of tensors
+                        processed_data = {k: fn(img) for k, fn in self.preprocess.items()}
+                else:
+                    # Single callable preprocessing
+                    processed_data = self.preprocess(img)
+                
+                yield uuid, processed_data
+                
+            except Exception as e:
+                logging.error(f"[Rank {self.rank}] Error processing row with UUID {row.get(self.col_uuid, 'unknown')}: {e}")
+                continue
+
+    def process_parquet_file(self, file_path: str) -> Iterator[Tuple[str, Any]]:
+        """
+        Process a single Parquet file and yield processed data.
+        
+        Args:
+            file_path: Path to the Parquet file to process.
+            
+        Yields:
+            Tuples of (uuid, processed_data) for each valid row in the file.
+        """
+        try:
+            # Read Parquet file in batches
+            parquet_file = pq.ParquetFile(file_path)
+            
+            for batch in parquet_file.iter_batches(batch_size=self.read_batch_size):
+                # Convert to pandas DataFrame
+                batch_df = batch.to_pandas()
+                
+                # Filter columns if specified
+                if self.read_columns:
+                    available_columns = [col for col in self.read_columns if col in batch_df.columns]
+                    if len(available_columns) != len(self.read_columns):
+                        missing = set(self.read_columns) - set(available_columns)
+                        logging.warning(f"Missing columns in {file_path}: {missing}")
+                    batch_df = batch_df[available_columns]
+                
+                # Process batch data
+                yield from self.parse_batch_data(batch_df)
+                
+        except Exception as e:
+            logging.error(f"[Rank {self.rank}] Error processing Parquet file {file_path}: {e}")
+            return
+        finally:
+            # Log processed file
+            self.log_processed_file(file_path)
+
+    def __iter__(self) -> Iterator[Tuple[str, Any]]:
+        """
+        Iterate over Parquet files and yield processed data.
+        Supports multi-worker data loading within each rank.
         """
         worker_info = get_worker_info()
         worker_id = worker_info.id if worker_info else 0
         num_workers = worker_info.num_workers if worker_info else 1
         
         # Staggered processing: each worker starts at a different offset
-        if self.stagger:
-            delay = min(random.uniform(1.0, 2.0) * worker_id, 20.0)
+        if self.stagger and worker_id > 0:
+            delay = min(random.uniform(0.1, 0.5) * worker_id, 5.0)
             logging.info(f"[Rank {self.rank}/Worker {worker_id}] Staggering start by {delay:.2f} seconds")
             time.sleep(delay)
 
-        # Assign files to workers
-        worker_files = self.files[worker_id::num_workers]
+        # Assign files to workers within this rank
+        worker_files = self.assigned_files[worker_id::num_workers]
+        
+        logging.info(f"[Rank {self.rank}/Worker {worker_id}] Processing {len(worker_files)} Parquet files")
 
-        for path in worker_files:
-            if path in self.processed_files:
-                logging.info(f"[Rank {self.rank}/Worker {worker_id}] Skipping already processed file: {path}")
-                continue
+        # Process each assigned file
+        for file_path in worker_files:
+            logging.info(f"[Rank {self.rank}/Worker {worker_id}] Processing file: {file_path}")
+            yield from self.process_parquet_file(file_path)
 
-            logging.info(f"[Rank {self.rank}/Worker {worker_id}] Processing file: {path}")
-            try:
-                pf = pq.ParquetFile(path)
-                for batch_idx, batch in enumerate(pf.iter_batches(batch_size=self.read_batch_size, columns=self.read_columns)):
-                    try:
-                        df = batch.to_pandas()
-                        for _, row in df.iterrows():
-                            try:
-                                yield self.parse_row(row)
-                            except Exception as e:
-                                uuid = row.get(self.col_uuid, 'UUID_UNKNOWN')
-                                logging.error(f"[Rank {self.rank}/Worker {worker_id}] Error parsing row UUID={uuid} in {path}: {e}", exc_info=True)
-                                continue
-                    except Exception as e:
-                        logging.error(f"[Rank {self.rank}/Worker {worker_id}] Error in batch {batch_idx} in file {path}: {e}", exc_info=True)
-                        continue
-                self.save_processed_file(path)  # Mark file as processed
-            except Exception as e:
-                logging.error(f"[Rank {self.rank}/Worker {worker_id}] Failed to open file {path}: {e}", exc_info=True)
-                continue
 
 
 class ParquetEmbeddingDataset(IterableDataset):
     """
-    An IterableDataset that reads embeddings from Parquet files in a distributed manner.
-    Each worker reads a subset of the files based on its rank and world size.
-    The dataset yields tuples of (uuid, embedding) where uuid is the unique identifier
-    for the embedding and embedding is a tensor.
+    Loads pre-computed embeddings from Parquet files in a streaming fashion.
+    - Reads embedding vectors from Parquet files
+    - Supports distributed processing with rank-based file partitioning  
+    - Supports multi-worker data loading within each rank
+    - Optimized for loading numerical data (embeddings) rather than images
     
-    Args:
-        parquet_files (list): List of paths to Parquet files.
-        col_uuid (str): Column name in the Parquet file that contains the UUIDs.
-        col_embedding (str): Column name in the Parquet file that contains the embeddings.
-        rank (int): Rank of the current process.
-        world_size (int): Total number of processes.
-        read_batch_size (int, optional): Number of rows to read from each Parquet file at once. Defaults to 100.
-        stagger (bool, optional): Whether to stagger the start of each worker. Defaults to False.
-        processed_files_log (str, optional): Path to the log file for tracking processed files. Defaults to None.
-        evenly_distribute (bool, optional): Whether to distribute files evenly based on size. Defaults to True.
+    Returns (uuid, embedding) tuples where:
+    - uuid: Unique identifier from the UUID column in Parquet
+    - embedding: Numpy array or tensor containing the embedding vector
     """
+
     def __init__(
-        self, 
-        parquet_files, col_uuid, col_embedding,
-        rank, world_size,
-        read_batch_size=100,
-        stagger=False,
-        processed_files_log=None, evenly_distribute=True
-    ):
-        
-        self.col_uuid = col_uuid
-        self.col_embedding = col_embedding
-        self.read_batch_size = read_batch_size
-        self.stagger = stagger  
-        self.rank = rank # Store rank for logging
-        self.world_size = world_size
-
-        self.files = assign_files_to_rank(
-            rank, world_size,
-            parquet_files, 
-            evenly_distribute=evenly_distribute
-        )
-
-        self.processed_files_log = processed_files_log or f"processed_files_rank{rank}.log"
-        self.processed_files = self.load_processed_files()
-
-        logging.info(f"[Rank {self.rank}] Assigned {len(self.files)} parquet files")
-
-    def load_processed_files(self):
-        """Load processed files from the log."""
-        if os.path.exists(self.processed_files_log):
-            with open(self.processed_files_log, "r") as f:
-                return set(f.read().splitlines())
-        return set()
-
-    def save_processed_file(self, file_path):
-        """Save a processed file to the log file, creating the directory if needed."""
-        log_dir = os.path.dirname(self.processed_files_log)
-        if log_dir and not os.path.exists(log_dir):
-            os.makedirs(log_dir, exist_ok=True)
-
-        with open(self.processed_files_log, "a") as f:
-            f.write(f"{file_path}\n")
-    
-    
-    def __iter__(self):
+        self,
+        parquet_files: List[Union[str, Path]],
+        col_uuid: str = "uuid",
+        col_embedding: str = "embedding",
+        rank: Optional[int] = None,
+        world_size: Optional[int] = None,
+        evenly_distribute: bool = True,
+        read_batch_size: int = 1000,
+        read_columns: Optional[List[str]] = None,
+        stagger: bool = False,
+        return_tensor: bool = True
+    ) -> None:
         """
-        Iterate over the dataset, yielding (uuid, embedding) tuples.
-        Each worker processes its assigned files and yields the results.
-        The dataset is designed to be used with PyTorch's DataLoader for distributed processing.
-        The function handles exceptions at various levels to ensure robust processing.
-        It skips already processed files and logs errors for individual rows and batches.
-        This allows for efficient and fault-tolerant processing of large datasets.
+        Args:
+            parquet_files: List of paths to Parquet files containing embedding data.
+            col_uuid: Name of the UUID column in Parquet files. Defaults to "uuid".
+            col_embedding: Name of the embedding column in Parquet files. Defaults to "embedding".
+            rank: Current process rank for distributed processing.
+            world_size: Total number of processes for distributed processing.
+            evenly_distribute: Whether to distribute files evenly based on size. Defaults to True.
+                If False, files are distributed in a round-robin manner.
+            read_batch_size: Number of rows to read from Parquet at a time. Defaults to 1000.
+            read_columns: List of column names to read from Parquet. If None, reads all columns.
+                Typically includes ["uuid", "embedding"].
+            stagger: Whether to stagger the start of each worker. Defaults to False.
+            return_tensor: If True, convert embeddings to PyTorch tensors. If False, keep as numpy arrays.
+        """
+        self.parquet_files: List[str] = [str(f) for f in parquet_files]
+        self.col_uuid: str = col_uuid
+        self.col_embedding: str = col_embedding
+        self.rank: int = rank or 0
+        self.world_size: int = world_size or 1
+        self.read_batch_size: int = read_batch_size
+        self.read_columns: Optional[List[str]] = read_columns
+        self.stagger: bool = stagger
+        self.return_tensor: bool = return_tensor
+
+        # Apply rank-based file partitioning
+        if self.world_size > 1:
+            self.assigned_files = assign_files_to_rank(
+                self.rank, self.world_size, self.parquet_files, evenly_distribute
+            )
+        else:
+            self.assigned_files = self.parquet_files
+
+        logging.info(f"Rank {self.rank} assigned {len(self.assigned_files)} out of {len(self.parquet_files)} Parquet files")
+
+    def process_parquet_file(self, file_path: str) -> Iterator[Tuple[str, Any]]:
+        """
+        Process a single Parquet file and yield embedding data.
         
+        Args:
+            file_path: Path to the Parquet file to process.
+            
         Yields:
-            tuple: A tuple containing the UUID and the embedding tensor.
+            Tuples of (uuid, embedding) for each row in the file.
+        """
+        try:
+            # Read Parquet file in batches
+            parquet_file = pq.ParquetFile(file_path)
+            
+            for batch in parquet_file.iter_batches(batch_size=self.read_batch_size):
+                # Convert to pandas DataFrame
+                batch_df = batch.to_pandas()
+                
+                # Filter columns if specified
+                if self.read_columns:
+                    available_columns = [col for col in self.read_columns if col in batch_df.columns]
+                    if len(available_columns) != len(self.read_columns):
+                        missing = set(self.read_columns) - set(available_columns)
+                        logging.warning(f"Missing columns in {file_path}: {missing}")
+                    batch_df = batch_df[available_columns]
+                
+                # Process each row
+                for _, row in batch_df.iterrows():
+                    try:
+                        uuid = str(row[self.col_uuid])
+                        embedding = row[self.col_embedding]
+                        
+                        # Convert to tensor if requested
+                        if self.return_tensor and hasattr(torch, 'from_numpy'):
+                            embedding = torch.from_numpy(embedding)
+                        
+                        yield uuid, embedding
+                        
+                    except Exception as e:
+                        logging.error(f"[Rank {self.rank}] Error processing row with UUID {row.get(self.col_uuid, 'unknown')}: {e}")
+                        continue
+                        
+        except Exception as e:
+            logging.error(f"[Rank {self.rank}] Error processing Parquet file {file_path}: {e}")
+            return
+
+    def __iter__(self) -> Iterator[Tuple[str, Any]]:
+        """
+        Iterate over Parquet files and yield embedding data.
+        Supports multi-worker data loading within each rank.
         """
         worker_info = get_worker_info()
         worker_id = worker_info.id if worker_info else 0
         num_workers = worker_info.num_workers if worker_info else 1
         
         # Staggered processing: each worker starts at a different offset
-        if self.stagger:
-            delay = min(random.uniform(1.0, 2.0) * worker_id, 20.0)
+        if self.stagger and worker_id > 0:
+            delay = min(random.uniform(0.1, 0.5) * worker_id, 5.0)
             logging.info(f"[Rank {self.rank}/Worker {worker_id}] Staggering start by {delay:.2f} seconds")
             time.sleep(delay)
+
+        # Assign files to workers within this rank
+        worker_files = self.assigned_files[worker_id::num_workers]
         
-        # Assign files to workers
-        worker_files = self.files[worker_id::num_workers]
+        logging.info(f"[Rank {self.rank}/Worker {worker_id}] Processing {len(worker_files)} Parquet files")
 
-        for path in worker_files:
-            if path in self.processed_files:
-                logging.info(f"[Rank {self.rank}/Worker {worker_id}] Skipping already processed file: {path}")
-                continue
-
-            logging.info(f"[Rank {self.rank}/Worker {worker_id}] Processing file: {path}")
-
-            try:
-                pf = pq.ParquetFile(path)
-                for batch_idx, batch in enumerate(pf.iter_batches(batch_size=self.read_batch_size, columns=[self.col_uuid, self.col_embedding])):
-                    try:
-                        uuids = batch[self.col_uuid].to_pylist()
-                        embeddings = torch.tensor(
-                            batch[self.col_embedding].to_pylist(),
-                            dtype=torch.float32
-                        )
-                        for uuid, embedding in zip(uuids, embeddings):
-                            yield uuid, embedding
-                    except Exception as e:
-                        logging.error(f"[Rank {self.rank}/Worker {worker_id}] Error in batch {batch_idx} in file {path}: {e}", exc_info=True)
-                        continue
-                self.save_processed_file(path)  # Mark file as processed
-            except Exception as e:
-                logging.error(f"[Rank {self.rank}/Worker {worker_id}] Failed to open file {path}: {e}", exc_info=True)
-                continue
+        # Process each assigned file
+        for file_path in worker_files:
+            logging.info(f"[Rank {self.rank}/Worker {worker_id}] Processing file: {file_path}")
+            yield from self.process_parquet_file(file_path)
