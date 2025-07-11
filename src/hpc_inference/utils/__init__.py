@@ -7,6 +7,7 @@ from .distributed import (
     get_distributed_info,
     validate_distributed_setup,
     multi_model_collate,
+    pil_image_collate,
 )
 from . import profiling
 
@@ -20,5 +21,6 @@ __all__ = [
     "get_distributed_info",
     "validate_distributed_setup",
     "multi_model_collate",
+    "pil_image_collate",
     "profiling",
 ]

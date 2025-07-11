@@ -250,6 +250,37 @@ def validate_distributed_setup(rank: int, world_size: int) -> bool:
     return True
 
 
+def pil_image_collate(batch: List[Tuple[str, Any]]) -> Tuple[List[str], List[Any]]:
+    """
+    Custom collate function for batches containing PIL Images.
+    
+    This function is required when working with datasets that return PIL Images
+    because PyTorch's default collate function only handles tensors, numpy arrays,
+    numbers, dicts, and lists - not PIL Image objects.
+    
+    Args:
+        batch: List of (uuid, image) tuples where image is a PIL Image.
+               Each tuple contains a UUID string and a PIL Image object.
+    
+    Returns:
+        Tuple containing:
+            - uuids: List of UUID strings from the batch
+            - images: List of PIL Image objects from the batch
+            
+    Examples:
+        >>> from PIL import Image
+        >>> batch = [("img1.jpg", Image.new("RGB", (100, 100))), 
+        ...           ("img2.jpg", Image.new("RGB", (200, 200)))]
+        >>> uuids, images = pil_image_collate(batch)
+        >>> print(uuids)
+        ['img1.jpg', 'img2.jpg']
+        >>> print([img.size for img in images])
+        [(100, 100), (200, 200)]
+    """
+    uuids, images = zip(*batch)
+    return list(uuids), list(images)
+
+
 def multi_model_collate(batch: List[Tuple[str, Dict[str, Any]]]) -> Tuple[List[str], Dict[str, torch.Tensor]]:
     """
     Collate function for batches where each sample is (uuid, {model_name: tensor, ...}).

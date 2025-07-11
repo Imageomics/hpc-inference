@@ -70,7 +70,9 @@ class ImageFolderDataset(IterableDataset):
         if uuid_mode == "filename":
             self.generate_uuid = lambda img_path: os.path.basename(img_path)
         elif uuid_mode == "relative":
-            self.generate_uuid = lambda img_path: os.path.relpath(img_path, self.image_dir)
+            # Calculate relative path from parent of image_dir to preserve folder structure
+            parent_dir = os.path.dirname(self.image_dir)
+            self.generate_uuid = lambda img_path: os.path.relpath(img_path, parent_dir)
         elif uuid_mode == "fullpath":
             self.generate_uuid = lambda img_path: img_path
         elif uuid_mode == "hash":
@@ -78,7 +80,7 @@ class ImageFolderDataset(IterableDataset):
             self.generate_uuid = lambda img_path: hashlib.md5(img_path.encode()).hexdigest()[:16]
         else:
             raise ValueError(f"Invalid uuid_mode: {uuid_mode}. "
-                           f"Valid options: 'filename', 'relative', 'fullpath', 'hash'")
+                        f"Valid options: 'filename', 'relative', 'fullpath', 'hash'")
 
     def __init__(
         self, 
