@@ -15,8 +15,8 @@ nav:
 
 theme:
   name: material
-  logo: docs/imgs/Imageomics_logo_butterfly.png
-  favicon: docs/imgs/Imageomics_logo_butterfly.png
+  logo: imgs/Imageomics_logo_butterfly.png
+  favicon: imgs/Imageomics_logo_butterfly.png
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
