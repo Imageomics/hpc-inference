@@ -1382,7 +1382,7 @@ We've loaded three different model preprocessing pipelines: two CLIP models (ViT
 <a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>2025-07-11 15:34:04,282 - INFO - [Rank 0/Worker 0] Processing 577 images
 </code></pre></div>
 <img alt="Original vs Processed Beetle Images" src="../imgs/processed_beetles.png" /></p>
-<p>The top row shows the original high-resolution images (5568×3712 pixels). The bottom row shows the same images after ResNet preprocessing: resized to 224×224 pixels, center-cropped, and normalized.</p>
+<p>The top row shows the original high-resolution images (5568×3712 pixels). The bottom row shows the same images after ResNet preprocessing: resized to 224×224 pixels, center-cropped, and de-normalized.</p>
 <h2 id="performance-optimization">Performance Optimization<a class="headerlink" href="#performance-optimization" title="Permanent link">&para;</a></h2>
 <p>Let's explore some performance aspects of the <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
