@@ -50,13 +50,14 @@ def test_dataset_classes():
     
     try:
         from hpc_inference import ParquetImageDataset, ImageFolderDataset
-        from hpc_inference.datasets import multi_model_collate
+        from hpc_inference.utils.distributed import multi_model_collate, pil_image_collate
         
         # Test that classes are actually classes
         import inspect
         assert inspect.isclass(ParquetImageDataset)
         assert inspect.isclass(ImageFolderDataset)
         assert callable(multi_model_collate)
+        assert callable(pil_image_collate)
         
         print("✅ Dataset classes imported successfully")
         return True
@@ -135,7 +136,7 @@ def test_distributed_functions():
     
     try:
         from hpc_inference.utils.distributed import (
-            assign_files_to_rank, get_distributed_info, multi_model_collate
+            assign_files_to_rank, get_distributed_info, multi_model_collate, pil_image_collate
         )
         
         # Test get_distributed_info
@@ -148,6 +149,12 @@ def test_distributed_functions():
         assigned = assign_files_to_rank(0, 2, dummy_files, evenly_distribute=False)
         assert isinstance(assigned, list)
         assert len(assigned) > 0
+        
+        # Test pil_image_collate function
+        dummy_batch = [("img1.jpg", "dummy_pil_image1"), ("img2.jpg", "dummy_pil_image2")]
+        uuids, images = pil_image_collate(dummy_batch)
+        assert uuids == ["img1.jpg", "img2.jpg"]
+        assert images == ["dummy_pil_image1", "dummy_pil_image2"]
         
         print("✅ Distributed functions work correctly")
         return True

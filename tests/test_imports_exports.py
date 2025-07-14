@@ -72,7 +72,7 @@ class TestImportsExports(unittest.TestCase):
             decode_image, save_emb_to_parquet, format_time, load_config,
             assign_files_to_rank, assign_indices_to_rank, 
             get_distributed_info, validate_distributed_setup,
-            multi_model_collate, profiling
+            multi_model_collate, pil_image_collate, profiling
         )
         
         # Test that functions are callable
@@ -85,6 +85,7 @@ class TestImportsExports(unittest.TestCase):
         self.assertTrue(callable(get_distributed_info))
         self.assertTrue(callable(validate_distributed_setup))
         self.assertTrue(callable(multi_model_collate))
+        self.assertTrue(callable(pil_image_collate))
         
         print("✅ All utils functions imported and callable")
 
@@ -95,7 +96,8 @@ class TestImportsExports(unittest.TestCase):
             assign_indices_to_rank, 
             get_distributed_info,
             validate_distributed_setup,
-            multi_model_collate
+            multi_model_collate,
+            pil_image_collate
         )
         
         # Test function signatures exist
@@ -287,7 +289,7 @@ class TestImportStructure(unittest.TestCase):
             "from hpc_inference import ParquetImageDataset, ImageFolderDataset",
             "from hpc_inference import assign_files_to_rank, format_time",
             "from hpc_inference.utils import profiling",
-            "from hpc_inference.datasets import multi_model_collate",
+            "from hpc_inference.utils.distributed import multi_model_collate, pil_image_collate",
         ]
         
         for import_stmt in test_imports:

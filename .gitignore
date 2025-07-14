@@ -147,6 +147,7 @@ venv.bak/
 
 # mkdocs documentation
 /site
+site/
 
 # mypy
 .mypy_cache/
@@ -196,3 +197,5 @@ cython_debug/
 .cursorindexingignore
 
 jobs/
+
+docs/neon_beetles_data/

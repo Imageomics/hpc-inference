@@ -1,0 +1,113 @@
+site_name: HPC-Inference
+site_description: Batch inference solution for large-scale image datasets on HPC
+site_author: Imageomics Institute
+site_url: https://imageomics.github.io/hpc-inference
+repo_url: https://github.com/Imageomics/hpc-inference
+repo_name: Imageomics/hpc-inference
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - User Guide:
+    - ImageFolder Dataset: imagefolder-guide.md
+    - GPU Utilization Metrics: utilization-metrics.md
+  - API Reference: api-reference.md
+
+theme:
+  name: material
+  logo: docs/imgs/Imageomics_logo_butterfly.png
+  favicon: docs/imgs/Imageomics_logo_butterfly.png
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
+  features:
+    - content.action.view
+    - content.code.copy
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Imageomics
+    - icon: simple/huggingface
+      link: https://huggingface.co/imageomics
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/imageomics-institute
+    - icon: fontawesome/brands/bluesky
+      link: https://bsky.app/profile/imageomics.bsky.social
+    - icon: fontawesome/brands/x-twitter
+      link: https://twitter.com/imageomics
+    - icon: fontawesome/brands/instagram
+      link: https://www.instagram.com/imageomics/
+    - icon: fontawesome/brands/youtube
+      link: https://www.youtube.com/@ImageomicsInstitute/videos
+    - icon: octicons/link-16
+      link: https://imageomics.org
+
+copyright: >
+  This work was supported by both the <a
+  href="https://imageomics.org" target="_blank"><u>Imageomics Institute</u></a> and the <a
+  href="http://abcresearchcenter.org/" target="_blank"><u>AI and Biodiversity Change (ABC) Global
+  Center</u></a>. 
+  
+  The Imageomics Institute is funded by the US National
+  Science Foundation's Harnessing the Data Revolution (HDR) program under <a
+  href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2118240" target="_blank"><u>Award
+  #2118240</u></a> (Imageomics: A New Frontier of Biological Information Powered by
+  Knowledge-Guided Machine Learning).
+  
+  The ABC Global Center is funded by the US
+  National Science Foundation under <a
+  href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=2330423&HistoricalAwards=false" target="_blank"><u>Award No.
+  2330423</u></a> and the Natural Sciences and Engineering Research Council of Canada
+  under <a
+  href="https://www.nserc-crsng.gc.ca/ase-oro/Details-Detailles_eng.asp?id=782440" target="_blank"><u>Award No. 585136</u></a>.
+  
+  Any opinions, findings,
+  conclusions, or recommendations expressed in this material are those of the
+  author(s) and do not necessarily reflect the views of the National Science
+  Foundation or the Natural Sciences and Engineering Research Council of Canada.

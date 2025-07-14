@@ -7,7 +7,7 @@ __email__ = "zhang.11091@osu.edu"
 # Import main classes for easy access
 from .datasets import ParquetImageDataset, ImageFolderDataset
 from .utils.common import decode_image, save_emb_to_parquet, format_time, load_config
-from .utils.distributed import assign_files_to_rank, assign_indices_to_rank, get_distributed_info
+from .utils.distributed import assign_files_to_rank, assign_indices_to_rank, get_distributed_info, multi_model_collate, pil_image_collate
 from .utils import profiling
 
 __all__ = [
@@ -21,6 +21,8 @@ __all__ = [
     "assign_files_to_rank",
     "assign_indices_to_rank",
     "get_distributed_info",
+    "multi_model_collate",
+    "pil_image_collate",
     "profiling",
 ]
 
