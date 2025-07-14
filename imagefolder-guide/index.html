@@ -21,7 +21,7 @@
         <link rel="next" href="../utilization-metrics/">
       
       
-      <link rel="icon" href="../docs/imgs/Imageomics_logo_butterfly.png">
+      <link rel="icon" href="../imgs/Imageomics_logo_butterfly.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.15">
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#imagefolder-dataset-guide" class="md-skip">
+        <a href="#imagefolderdataset-guide-working-with-neon-beetle-images" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +98,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="HPC-Inference" class="md-header__button md-logo" aria-label="HPC-Inference" data-md-component="logo">
       
-  <img src="../docs/imgs/Imageomics_logo_butterfly.png" alt="logo">
+  <img src="../imgs/Imageomics_logo_butterfly.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -333,7 +333,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="HPC-Inference" class="md-nav__button md-logo" aria-label="HPC-Inference" data-md-component="logo">
       
-  <img src="../docs/imgs/Imageomics_logo_butterfly.png" alt="logo">
+  <img src="../imgs/Imageomics_logo_butterfly.png" alt="logo">
 
     </a>
     HPC-Inference
@@ -511,9 +511,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-dataset" class="md-nav__link">
+  <a href="#dataset-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Example Dataset
+      Dataset Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-and-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup and Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#download-the-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Download the Dataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#import-imagefolderdataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Import ImageFolderDataset
     </span>
   </a>
   
@@ -526,43 +553,27 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Basic Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#simple-setup" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#image-validation" class="md-nav__link">
     <span class="md-ellipsis">
-      Simple Setup
+      Image Validation
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#processing-images" class="md-nav__link">
-    <span class="md-ellipsis">
-      Processing Images
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-features" class="md-nav__link">
+  <a href="#single-model-preprocessing" class="md-nav__link">
     <span class="md-ellipsis">
-      Advanced Features
+      Single Model Preprocessing
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Advanced Features">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multi-model-preprocessing" class="md-nav__link">
     <span class="md-ellipsis">
       Multi-Model Preprocessing
@@ -570,18 +581,13 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#validation-and-error-handling" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#uuid-generation-modes" class="md-nav__link">
     <span class="md-ellipsis">
-      Validation and Error Handling
+      UUID Generation Modes
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -592,20 +598,14 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Distributed Processing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#multi-gpu-setup" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visualizing-processed-images" class="md-nav__link">
     <span class="md-ellipsis">
-      Multi-GPU Setup
+      Visualizing Processed Images
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -616,97 +616,67 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Performance Optimization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#memory-management" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sampling-considerations" class="md-nav__link">
     <span class="md-ellipsis">
-      Memory Management
+      Sampling Considerations
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#profiling" class="md-nav__link">
-    <span class="md-ellipsis">
-      Profiling
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
+  <a href="#best-practices-and-tips" class="md-nav__link">
     <span class="md-ellipsis">
-      Best Practices
+      Best Practices and Tips
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Best Practices">
+    <nav class="md-nav" aria-label="Best Practices and Tips">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-choose-appropriate-batch-size" class="md-nav__link">
+  <a href="#choose-the-right-uuid-mode" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Choose Appropriate Batch Size
+      Choose the Right UUID Mode
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-optimize-number-of-workers" class="md-nav__link">
+  <a href="#validation" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Optimize Number of Workers
+      Validation
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-use-pin-memory" class="md-nav__link">
+  <a href="#multi-model-processing" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Use Pin Memory
+      Multi-Model Processing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-handle-corrupted-files" class="md-nav__link">
+  <a href="#distributed-processing-performance-optimization" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Handle Corrupted Files
+      Distributed Processing &amp; Performance Optimization
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      Troubleshooting
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#common-issues" class="md-nav__link">
+  <a href="#collate-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      Common Issues
+      Collate Functions
     </span>
   </a>
   
@@ -814,9 +784,36 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#example-dataset" class="md-nav__link">
+  <a href="#dataset-overview" class="md-nav__link">
     <span class="md-ellipsis">
-      Example Dataset
+      Dataset Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-and-installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup and Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#download-the-dataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Download the Dataset
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#import-imagefolderdataset" class="md-nav__link">
+    <span class="md-ellipsis">
+      Import ImageFolderDataset
     </span>
   </a>
   
@@ -829,43 +826,27 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Basic Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#simple-setup" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#image-validation" class="md-nav__link">
     <span class="md-ellipsis">
-      Simple Setup
+      Image Validation
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#processing-images" class="md-nav__link">
-    <span class="md-ellipsis">
-      Processing Images
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#advanced-features" class="md-nav__link">
+  <a href="#single-model-preprocessing" class="md-nav__link">
     <span class="md-ellipsis">
-      Advanced Features
+      Single Model Preprocessing
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Advanced Features">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#multi-model-preprocessing" class="md-nav__link">
     <span class="md-ellipsis">
       Multi-Model Preprocessing
@@ -873,18 +854,13 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#validation-and-error-handling" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#uuid-generation-modes" class="md-nav__link">
     <span class="md-ellipsis">
-      Validation and Error Handling
+      UUID Generation Modes
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -895,20 +871,14 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Distributed Processing">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#multi-gpu-setup" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#visualizing-processed-images" class="md-nav__link">
     <span class="md-ellipsis">
-      Multi-GPU Setup
+      Visualizing Processed Images
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -919,97 +889,67 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Performance Optimization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#memory-management" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sampling-considerations" class="md-nav__link">
     <span class="md-ellipsis">
-      Memory Management
+      Sampling Considerations
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#profiling" class="md-nav__link">
-    <span class="md-ellipsis">
-      Profiling
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
+  <a href="#best-practices-and-tips" class="md-nav__link">
     <span class="md-ellipsis">
-      Best Practices
+      Best Practices and Tips
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Best Practices">
+    <nav class="md-nav" aria-label="Best Practices and Tips">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-choose-appropriate-batch-size" class="md-nav__link">
+  <a href="#choose-the-right-uuid-mode" class="md-nav__link">
     <span class="md-ellipsis">
-      1. Choose Appropriate Batch Size
+      Choose the Right UUID Mode
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-optimize-number-of-workers" class="md-nav__link">
+  <a href="#validation" class="md-nav__link">
     <span class="md-ellipsis">
-      2. Optimize Number of Workers
+      Validation
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#3-use-pin-memory" class="md-nav__link">
+  <a href="#multi-model-processing" class="md-nav__link">
     <span class="md-ellipsis">
-      3. Use Pin Memory
+      Multi-Model Processing
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#4-handle-corrupted-files" class="md-nav__link">
+  <a href="#distributed-processing-performance-optimization" class="md-nav__link">
     <span class="md-ellipsis">
-      4. Handle Corrupted Files
+      Distributed Processing &amp; Performance Optimization
     </span>
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      Troubleshooting
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#common-issues" class="md-nav__link">
+  <a href="#collate-functions" class="md-nav__link">
     <span class="md-ellipsis">
-      Common Issues
+      Collate Functions
     </span>
   </a>
   
@@ -1047,155 +987,509 @@
   
 
 
-<h1 id="imagefolder-dataset-guide">ImageFolder Dataset Guide<a class="headerlink" href="#imagefolder-dataset-guide" title="Permanent link">&para;</a></h1>
-<p>This guide provides a comprehensive tutorial on using the <code>ImageFolderDataset</code> class from the HPC-Inference package.</p>
+<h1 id="imagefolderdataset-guide-working-with-neon-beetle-images">ImageFolderDataset Guide: Working with NEON Beetle Images<a class="headerlink" href="#imagefolderdataset-guide-working-with-neon-beetle-images" title="Permanent link">&para;</a></h1>
+<p>This guide demonstrates how to use the <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a> class from the HPC Inference package with the <a href="https://huggingface.co/datasets/imageomics/2018-NEON-beetles">2018 NEON Beetles dataset</a>.</p>
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
-<p>The <code>ImageFolderDataset</code> is designed for efficient processing of image datasets stored in folder structures. It provides optimized data loading capabilities for HPC environments with features like:</p>
+<p>The <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a> is designed for efficient streaming of large image collections, with support for:</p>
 <ul>
-<li>Parallel data loading</li>
-<li>Memory-efficient processing</li>
-<li>Integration with PyTorch <a href="https://docs.pytorch.org/docs/stable/data.html"><code>DataLoader</code></a></li>
-<li>Support for various image formats (JPG, PNG, TIFF, etc.)</li>
+<li><strong>Distributed processing</strong> across multiple workers/ranks</li>
+<li><strong>Multiple preprocessing pipelines</strong> for different models</li>
+<li><strong>Flexible UUID generation</strong> from file paths</li>
+<li><strong>Image validation</strong> using PIL</li>
+<li><strong>Memory-efficient streaming</strong> for large datasets</li>
 </ul>
-<h2 id="example-dataset">Example Dataset<a class="headerlink" href="#example-dataset" title="Permanent link">&para;</a></h2>
-<p>This guide demonstrates working with the <a href="https://huggingface.co/datasets/imageomics/2018-NEON-beetles">NEON Beetle dataset</a>, which contains high-resolution images of beetles collected by the National Ecological Observatory Network.</p>
-<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
-<h3 id="simple-setup">Simple Setup<a class="headerlink" href="#simple-setup" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">hpc_inference.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageFolderDataset</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torchvision.transforms</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">transforms</span>
+<h2 id="dataset-overview">Dataset Overview<a class="headerlink" href="#dataset-overview" title="Permanent link">&para;</a></h2>
+<p>The 2018 NEON Beetles dataset contains:
+- 577 high-resolution group images of ethanol-preserved beetles
+- Beetles collected from NEON ecological sites in 2018
+- Multiple beetles per image, organized by species
+- Rich metadata including species labels, site information, and measurements</p>
+<p>We'll work with the <code>group_images</code> folder which contains the original full-size images.</p>
+<h2 id="setup-and-installation">Setup and Installation<a class="headerlink" href="#setup-and-installation" title="Permanent link">&para;</a></h2>
+<p>First, install the required packages:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Install required packages (if not already installed)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># Follow instruction to install hpc_inference</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># pip install datasets huggingface_hub torch torchvision open_clip_torch pillow matplotlib</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Define transforms</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">((</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)),</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> 
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                        <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="p">])</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="c1"># Create dataset</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="n">dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">root_dir</span><span class="o">=</span><span class="s2">&quot;/path/to/beetle/images&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>    <span class="n">transform</span><span class="o">=</span><span class="n">transform</span><span class="p">,</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="n">extensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;.jpeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="s1">&#39;.tiff&#39;</span><span class="p">)</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="p">)</span>
-<a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>
-<a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="c1"># Create dataloader</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="n">dataset</span><span class="p">,</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>    <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Import required libraries</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">transforms</span>
+<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </code></pre></div>
-<h3 id="processing-images">Processing Images<a class="headerlink" href="#processing-images" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># Process all images</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="c1"># Move to GPU if available</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">():</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        <span class="n">images</span> <span class="o">=</span> <span class="n">images</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="c1"># Your inference code here</span>
-<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
-<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="c1"># Process outputs</span>
-<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch </span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">: Processed </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">images</span><span class="p">)</span><span class="si">}</span><span class="s2"> images&quot;</span><span class="p">)</span>
-<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">path</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">paths</span><span class="p">):</span>
-<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">outputs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<h2 id="download-the-dataset">Download the Dataset<a class="headerlink" href="#download-the-dataset" title="Permanent link">&para;</a></h2>
+<p>Download the NEON Beetles dataset using the Hugging Face datasets library:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dataset</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">huggingface_hub</span><span class="w"> </span><span class="kn">import</span> <span class="n">snapshot_download</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># Download the full dataset (this might take a while - ~5GB)</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># We&#39;ll focus on the group_images folder</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">data_dir</span> <span class="o">=</span> <span class="s2">&quot;./neon_beetles_data&quot;</span>
+<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="c1"># Download the dataset</span>
+<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="n">snapshot_download</span><span class="p">(</span>
+<a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="n">repo_id</span><span class="o">=</span><span class="s2">&quot;imageomics/2018-NEON-beetles&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">repo_type</span><span class="o">=</span><span class="s2">&quot;dataset&quot;</span><span class="p">,</span>
+<a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>    <span class="n">local_dir</span><span class="o">=</span><span class="n">data_dir</span><span class="p">,</span>
+<a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>    <span class="n">allow_patterns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;group_images/*&quot;</span><span class="p">]</span>  <span class="c1"># Only download group images</span>
+<a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="p">)</span>
+<a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+<a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="c1"># Set up paths</span>
+<a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="n">image_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;group_images&quot;</span>
+<a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset downloaded to: </span><span class="si">{</span><span class="n">image_dir</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of images: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">image_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.jpg&#39;</span><span class="p">)))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </code></pre></div>
-<h2 id="advanced-features">Advanced Features<a class="headerlink" href="#advanced-features" title="Permanent link">&para;</a></h2>
-<h3 id="multi-model-preprocessing">Multi-Model Preprocessing<a class="headerlink" href="#multi-model-preprocessing" title="Permanent link">&para;</a></h3>
-<p><strong>TODO</strong></p>
-<h3 id="validation-and-error-handling">Validation and Error Handling<a class="headerlink" href="#validation-and-error-handling" title="Permanent link">&para;</a></h3>
-<p><strong>TODO</strong></p>
-<h2 id="distributed-processing">Distributed Processing<a class="headerlink" href="#distributed-processing" title="Permanent link">&para;</a></h2>
-<h3 id="multi-gpu-setup">Multi-GPU Setup<a class="headerlink" href="#multi-gpu-setup" title="Permanent link">&para;</a></h3>
-<p><strong>TODO</strong></p>
-<h2 id="performance-optimization">Performance Optimization<a class="headerlink" href="#performance-optimization" title="Permanent link">&para;</a></h2>
-<h3 id="memory-management">Memory Management<a class="headerlink" href="#memory-management" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Optimize memory usage</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="n">dataset</span><span class="p">,</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">persistent_workers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Keep workers alive between epochs</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">prefetch_factor</span><span class="o">=</span><span class="mi">2</span>         <span class="c1"># Prefetch batches per worker</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="p">)</span>
-</code></pre></div>
-<h3 id="profiling">Profiling<a class="headerlink" href="#profiling" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>Fetching 578 files: 100%|██████████| 578/578 [00:00&lt;00:00, 635.80it/s]
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Dataset downloaded to: neon_beetles_data/group_images
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Number of images: 577
+</code></pre></div></p>
+<h2 id="import-imagefolderdataset">Import ImageFolderDataset<a class="headerlink" href="#import-imagefolderdataset" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Import the ImageFolderDataset from the installed package</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">hpc_inference.datasets.image_folder_dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">ImageFolderDataset</span>
 <a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nd">@contextmanager</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="k">def</span><span class="w"> </span><span class="nf">timer</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>    <span class="k">yield</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">end</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">start</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2"> seconds&quot;</span><span class="p">)</span>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1"># Profile data loading</span>
-<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="s2">&quot;Data loading&quot;</span><span class="p">):</span>
-<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>    <span class="k">for</span> <span class="n">batch_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">paths</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
-<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        <span class="k">if</span> <span class="n">batch_idx</span> <span class="o">&gt;=</span> <span class="mi">10</span><span class="p">:</span>  <span class="c1"># Profile first 10 batches</span>
-<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>            <span class="k">break</span>
-<a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
-<a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>        <span class="k">with</span> <span class="n">timer</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch </span><span class="si">{</span><span class="n">batch_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
-<a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>            <span class="c1"># Your processing code</span>
-<a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>            <span class="k">pass</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Import the collate functions from distributed utils</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kn">from</span><span class="w"> </span><span class="nn">hpc_inference.utils.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">pil_image_collate</span>
 </code></pre></div>
-<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
-<h3 id="1-choose-appropriate-batch-size">1. Choose Appropriate Batch Size<a class="headerlink" href="#1-choose-appropriate-batch-size" title="Permanent link">&para;</a></h3>
+<h2 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h2>
+<p>Let's start with the simplest usage - loading images without any preprocessing.</p>
+<p><strong>Important Note</strong>: When using <code>preprocess=None</code> (returning PIL Images), we need a custom collate function because PyTorch's default collate function only knows how to handle tensors, numpy arrays, numbers, dicts, and lists - not PIL Image objects.</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Create a basic dataset (no preprocessing)</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">basic_dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># No preprocessing - returns PIL Images</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">uuid_mode</span><span class="o">=</span><span class="s2">&quot;filename&quot;</span>  <span class="c1"># Use filename as UUID</span>
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="p">)</span>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset contains </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">basic_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> images&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1"># Create a DataLoader with custom collate function for PIL Images</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># Note: We need a custom collate function because PyTorch&#39;s default collate </span>
+<a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="c1"># function doesn&#39;t know how to handle PIL Image objects</span>
+<a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="n">basic_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+<a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    <span class="n">basic_dataset</span><span class="p">,</span> 
+<a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>    <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+<a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>    <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>    <span class="n">collate_fn</span><span class="o">=</span><span class="n">pil_image_collate</span>  <span class="c1"># Use our custom collate function</span>
+<a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="p">)</span>
+<a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>
+<a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="c1"># Get first batch</span>
+<a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="k">for</span> <span class="n">uuids</span><span class="p">,</span> <span class="n">images</span> <span class="ow">in</span> <span class="n">basic_loader</span><span class="p">:</span>
+<a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch UUIDs: </span><span class="si">{</span><span class="n">uuids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image types: </span><span class="si">{</span><span class="p">[</span><span class="nb">type</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">img</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">images</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Image sizes: </span><span class="si">{</span><span class="p">[</span><span class="n">img</span><span class="o">.</span><span class="n">size</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">img</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">images</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>    <span class="k">break</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>2025-07-11 15:22:24,047 - INFO - Rank 0 assigned 577 out of 577 images
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Dataset contains 577 images
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>2025-07-11 15:22:24,072 - INFO - [Rank 0/Worker 0] Processing 577 images
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>Batch UUIDs: [&#39;A00000001831.jpg&#39;, &#39;A00000003356.jpg&#39;]
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Image types: [&lt;class &#39;PIL.Image.Image&#39;&gt;, &lt;class &#39;PIL.Image.Image&#39;&gt;]
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Image sizes: [(5568, 3712), (5568, 3712)]
+</code></pre></div>
+The output above shows that rank 0 (single/current process) was assigned all 577 images from the NEON beetle dataset. A single worker processes these images, returning PIL Image objects with original high-resolution dimensions (5568×3712). The batch contains 2 images with filenames as UUIDs, demonstrating successful operation with the custom <a href="../api-reference/#hpc_inference.utils"><code>pil_image_collate</code></a> function required for PIL images.</p>
+<h2 id="image-validation">Image Validation<a class="headerlink" href="#image-validation" title="Permanent link">&para;</a></h2>
+<p>When working with large datasets from unknown sources, you might want to validate that all images can be properly loaded:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Create dataset with validation enabled</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># Note: This will be slower as it validates each image</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">validated_dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Enable validation</span>
+<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="n">uuid_mode</span><span class="o">=</span><span class="s2">&quot;filename&quot;</span>
+<a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">)</span>
+<a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>
+<a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Validated dataset contains </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">validated_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> valid images&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+<a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="c1"># Compare with non-validated count</span>
+<a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="n">total_jpg_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">image_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.jpg&#39;</span><span class="p">)))</span>
+<a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total .jpg files in directory: </span><span class="si">{</span><span class="n">total_jpg_files</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Valid images after validation: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">validated_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
+<a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">validated_dataset</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">total_jpg_files</span><span class="p">:</span>
+<a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">total_jpg_files</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">validated_dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> images failed validation&quot;</span><span class="p">)</span>
+<a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;All images passed validation&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>2025-07-11 15:33:15,081 - INFO - Rank 0 assigned 577 out of 577 images
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Validated dataset contains 577 valid images
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>Total .jpg files in directory: 577
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>Valid images after validation: 577
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>All images passed validation
+</code></pre></div>
+All of our image downloads are validated! Awesome!</p>
+<div class="admonition note">
+<p class="admonition-title">Performance Note</p>
+<p>Image validation will slow down the dataset initialization process. For GPU-intensive workflows, it's recommended to validate your dataset in a separate preprocessing step before submitting jobs that require GPU resources, as GPU idle time during validation can be costly and wasteful.</p>
+</div>
+<h2 id="single-model-preprocessing">Single Model Preprocessing<a class="headerlink" href="#single-model-preprocessing" title="Permanent link">&para;</a></h2>
+<p>Now let's add preprocessing for a single computer vision model. We'll use a simple ResNet preprocessing pipeline:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Define preprocessing for a single model (e.g., ResNet)</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">resnet_transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">(</span><span class="mi">256</span><span class="p">),</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">transforms</span><span class="o">.</span><span class="n">CenterCrop</span><span class="p">(</span><span class="mi">224</span><span class="p">),</span>
+<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span>
+<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="p">])</span>
+<a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+<a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="c1"># Create dataset with single model preprocessing</span>
+<a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="n">single_model_dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span>
+<a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>    <span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span>
+<a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>    <span class="n">preprocess</span><span class="o">=</span><span class="n">resnet_transform</span><span class="p">,</span>
+<a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>    <span class="n">uuid_mode</span><span class="o">=</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span>
+<a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>    <span class="n">validate</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># Set to True for safer operation with unknown image quality</span>
+<a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="p">)</span>
+<a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>
+<a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="c1"># Create DataLoader</span>
+<a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a><span class="n">single_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">single_model_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>
+<a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="c1"># Get a batch and examine the output</span>
+<a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="k">for</span> <span class="n">uuids</span><span class="p">,</span> <span class="n">tensor_batch</span> <span class="ow">in</span> <span class="n">single_loader</span><span class="p">:</span>
+<a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch UUIDs: </span><span class="si">{</span><span class="n">uuids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor batch shape: </span><span class="si">{</span><span class="n">tensor_batch</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor dtype: </span><span class="si">{</span><span class="n">tensor_batch</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tensor range: [</span><span class="si">{</span><span class="n">tensor_batch</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">tensor_batch</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+<a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>    <span class="k">break</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>2025-07-11 15:22:50,871 - INFO - Rank 0 assigned 577 out of 577 images
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>2025-07-11 15:22:50,891 - INFO - [Rank 0/Worker 0] Processing 577 images
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>Batch UUIDs: (&#39;A00000001831.jpg&#39;, &#39;A00000003356.jpg&#39;, &#39;A00000008914.jpg&#39;, &#39;A00000008915.jpg&#39;)
+<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>Tensor batch shape: torch.Size([4, 3, 224, 224])
+<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>Tensor dtype: torch.float32
+<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>Tensor range: [-1.998, 2.588]
+</code></pre></div>
+With preprocessing enabled, the dataset now applies the ResNet transformation pipeline to each image. The output shows that our high-resolution NEON beetle images (originally 5568×3712) have been resized to 224×224 pixels, converted to normalized tensors with 3 color channels. </p>
+<p><strong>Tensor structure:</strong></p>
 <ul>
-<li>Start with batch size 16 and adjust based on GPU memory</li>
-<li>Larger batches generally improve GPU utilization</li>
-<li>Monitor memory usage to avoid OOM errors</li>
+<li><strong>Shape <code>[4, 3, 224, 224]</code></strong>: This follows the standard PyTorch convention (batch_size, channels, height, width)</li>
+<li><code>4</code>: Batch size (4 images in this batch)</li>
+<li><code>3</code>: Color channels (RGB)</li>
+<li><code>224, 224</code>: Image dimensions after preprocessing (height, width)</li>
+<li><strong>Data type <code>torch.float32</code></strong>: Standard floating-point format for neural network input</li>
+<li><strong>Value range <code>[-1.998, 2.588]</code></strong>: Result normalization with mean=[0.485, 0.456, 0.406] and std=[0.229, 0.224, 0.225]</li>
 </ul>
-<h3 id="2-optimize-number-of-workers">2. Optimize Number of Workers<a class="headerlink" href="#2-optimize-number-of-workers" title="Permanent link">&para;</a></h3>
+<p>Notice that we no longer need a custom collate function since PyTorch's default collate function handles tensors natively, making the batch processing more straightforward and efficient than with raw PIL images.</p>
+<h2 id="multi-model-preprocessing">Multi-Model Preprocessing<a class="headerlink" href="#multi-model-preprocessing" title="Permanent link">&para;</a></h2>
+<p>The <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a> supports multiple model preprocessing pipelines simultaneously:</p>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Define preprocessing for multiple models</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">open_clip</span>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Get CLIP preprocessing functions</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">clip_preprocess_vit_b</span> <span class="o">=</span> <span class="n">open_clip</span><span class="o">.</span><span class="n">create_model_and_transforms</span><span class="p">(</span><span class="s1">&#39;ViT-B-32&#39;</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="s1">&#39;openai&#39;</span><span class="p">)</span>
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">clip_preprocess_vit_l</span> <span class="o">=</span> <span class="n">open_clip</span><span class="o">.</span><span class="n">create_model_and_transforms</span><span class="p">(</span><span class="s1">&#39;ViT-L-14&#39;</span><span class="p">,</span> <span class="n">pretrained</span><span class="o">=</span><span class="s1">&#39;openai&#39;</span><span class="p">)</span>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="c1"># Create multi-model preprocessing dictionary</span>
+<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="n">multi_model_preprocess</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>    <span class="s2">&quot;clip_vit_b32&quot;</span><span class="p">:</span> <span class="n">clip_preprocess_vit_b</span><span class="p">,</span>
+<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>    <span class="s2">&quot;clip_vit_l14&quot;</span><span class="p">:</span> <span class="n">clip_preprocess_vit_l</span><span class="p">,</span>
+<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>    <span class="s2">&quot;resnet&quot;</span><span class="p">:</span> <span class="n">resnet_transform</span>
+<a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="p">}</span>
+<a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>
+<a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="c1"># Create dataset with multi-model preprocessing</span>
+<a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a><span class="n">multi_model_dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span>
+<a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>    <span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span>
+<a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>    <span class="n">preprocess</span><span class="o">=</span><span class="n">multi_model_preprocess</span><span class="p">,</span>
+<a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>    <span class="n">uuid_mode</span><span class="o">=</span><span class="s2">&quot;relative&quot;</span><span class="p">,</span>  <span class="c1"># Use relative path as UUID</span>
+<a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a>    <span class="n">validate</span><span class="o">=</span><span class="kc">False</span>
+<a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="p">)</span>
+<a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>
+<a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Multi-model dataset created with </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">multi_model_preprocess</span><span class="p">)</span><span class="si">}</span><span class="s2"> preprocessing pipelines&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>2025-07-11 15:23:28,363 - INFO - Loaded ViT-B-32 model config.
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>2025-07-11 15:23:29,171 - INFO - Loading pretrained ViT-B-32 weights (openai).
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>2025-07-11 15:23:29,296 - INFO - Loaded ViT-L-14 model config.
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>2025-07-11 15:23:31,198 - INFO - Loading pretrained ViT-L-14 weights (openai).
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>2025-07-11 15:23:31,327 - INFO - Rank 0 assigned 577 out of 577 images
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>Multi-model dataset created with 3 preprocessing pipelines
+</code></pre></div>
+We've loaded three different model preprocessing pipelines: two CLIP models (ViT-B-32 and ViT-L-14) with their pretrained weights, plus our custom ResNet transform. This multi-model approach allows us to process the same beetle images for different computer vision models simultaneously, which is particularly useful for comparative analysis or ensemble methods.</p>
+<p>For multi-model datasets, we also need to use a special collate function:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">hpc_inference.utils.distributed</span><span class="w"> </span><span class="kn">import</span> <span class="n">multi_model_collate</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="c1"># Create DataLoader with multi-model collate function</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="n">multi_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>    <span class="n">multi_model_dataset</span><span class="p">,</span> 
+<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>    <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>    <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>  
+<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>    <span class="n">collate_fn</span><span class="o">=</span><span class="n">multi_model_collate</span>
+<a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="p">)</span>
+<a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+<a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="c1"># Get a batch and examine the output</span>
+<a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="k">for</span> <span class="n">uuids</span><span class="p">,</span> <span class="n">data_dict</span> <span class="ow">in</span> <span class="n">multi_loader</span><span class="p">:</span>
+<a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Batch UUIDs: </span><span class="si">{</span><span class="n">uuids</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Available models: </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">data_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>
+<a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>    <span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">tensor</span> <span class="ow">in</span> <span class="n">data_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  </span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">: shape </span><span class="si">{</span><span class="n">tensor</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, dtype </span><span class="si">{</span><span class="n">tensor</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>    <span class="k">break</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>2025-07-11 15:24:23,760 - INFO - [Rank 0/Worker 0] Processing 577 images
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Batch UUIDs: [&#39;A00000001831.jpg&#39;, &#39;A00000003356.jpg&#39;]
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>Available models: [&#39;clip_vit_b32&#39;, &#39;clip_vit_l14&#39;, &#39;resnet&#39;]
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>  clip_vit_b32: shape torch.Size([2, 3, 224, 224]), dtype torch.float32
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>  clip_vit_l14: shape torch.Size([2, 3, 224, 224]), dtype torch.float32
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>  resnet: shape torch.Size([2, 3, 224, 224]), dtype torch.float32
+</code></pre></div>
+<p>Now we demonstrated successful multi-model batch processing where each image is automatically preprocessed for all three models simultaneously. </p>
+<p>The dataset returns a dictionary containing preprocessed tensors for each model, all with the same batch size (2) and image dimensions (224×224), but each potentially having different normalization and preprocessing applied according to their respective model requirements. The <a href="../api-reference/#hpc_inference.utils"><code>multi_model_collate</code></a> function ensures proper batching of the dictionary structure across multiple samples.</p>
+<h2 id="uuid-generation-modes">UUID Generation Modes<a class="headerlink" href="#uuid-generation-modes" title="Permanent link">&para;</a></h2>
+<p>The <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a> supports different ways to generate unique identifiers from file paths:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Test different UUID modes</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="n">uuid_modes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span> <span class="s2">&quot;relative&quot;</span><span class="p">,</span> <span class="s2">&quot;fullpath&quot;</span><span class="p">,</span> <span class="s2">&quot;hash&quot;</span><span class="p">]</span>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">uuid_modes</span><span class="p">:</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- UUID Mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2"> ---&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>    <span class="n">dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>        <span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span>
+<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>        <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>        <span class="n">uuid_mode</span><span class="o">=</span><span class="n">mode</span>
+<a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>    <span class="p">)</span>
+<a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>
+<a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>    <span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+<a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>        <span class="n">dataset</span><span class="p">,</span> 
+<a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>        <span class="n">batch_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+<a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>        <span class="n">num_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>        <span class="n">collate_fn</span><span class="o">=</span><span class="n">pil_image_collate</span>  <span class="c1"># Use custom collate for PIL images</span>
+<a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>    <span class="p">)</span>
+<a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>
+<a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>    <span class="c1"># Get first batch and show UUIDs</span>
+<a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>    <span class="k">for</span> <span class="n">uuids</span><span class="p">,</span> <span class="n">images</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+<a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>        <span class="k">for</span> <span class="n">uuid</span> <span class="ow">in</span> <span class="n">uuids</span><span class="p">:</span>
+<a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  UUID: </span><span class="si">{</span><span class="n">uuid</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>        <span class="k">break</span>
+</code></pre></div>
+<h2 id="distributed-processing">Distributed Processing<a class="headerlink" href="#distributed-processing" title="Permanent link">&para;</a></h2>
+<p>The <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a> is designed for distributed processing across multiple workers/ranks. Let's simulate this by creating multiple dataset instances with different rank settings:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Simulate distributed processing with 3 workers</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="n">world_size</span> <span class="o">=</span> <span class="mi">3</span>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">rank_datasets</span> <span class="o">=</span> <span class="p">[]</span>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Distributing images across </span><span class="si">{</span><span class="n">world_size</span><span class="si">}</span><span class="s2"> workers:&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">world_size</span><span class="p">):</span>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    <span class="n">dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>        <span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span>
+<a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>        <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>        <span class="n">rank</span><span class="o">=</span><span class="n">rank</span><span class="p">,</span>
+<a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>        <span class="n">world_size</span><span class="o">=</span><span class="n">world_size</span><span class="p">,</span>
+<a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>        <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Distribute based on file sizes</span>
+<a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>        <span class="n">uuid_mode</span><span class="o">=</span><span class="s2">&quot;filename&quot;</span>
+<a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>    <span class="p">)</span>
+<a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>
+<a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>    <span class="n">rank_datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+<a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span><span class="si">}</span><span class="s2"> images&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>
+<a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="c1"># Verify no overlap between ranks</span>
+<a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="n">all_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a><span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="n">dataset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rank_datasets</span><span class="p">):</span>
+<a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>    <span class="n">rank_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">image_files</span><span class="p">)</span>
+<a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>    <span class="n">overlap</span> <span class="o">=</span> <span class="n">all_files</span><span class="o">.</span><span class="n">intersection</span><span class="p">(</span><span class="n">rank_files</span><span class="p">)</span>
+<a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>    <span class="k">if</span> <span class="n">overlap</span><span class="p">:</span>
+<a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;WARNING: Rank </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> has overlapping files: </span><span class="si">{</span><span class="n">overlap</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>    <span class="n">all_files</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">rank_files</span><span class="p">)</span>
+<a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>
+<a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Total unique files across all ranks: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_files</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Original total files: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">image_dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">&#39;*.jpg&#39;</span><span class="p">)))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>2025-07-11 15:27:01,756 - INFO - Rank 0 assigned 193 files (total size: 0.98 GB)
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>2025-07-11 15:27:01,757 - INFO - Rank 0 assigned 193 out of 577 images
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>2025-07-11 15:27:01,759 - INFO - Rank 1 assigned 192 files (total size: 0.98 GB)
+<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>2025-07-11 15:27:01,759 - INFO - Rank 1 assigned 192 out of 577 images
+<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>2025-07-11 15:27:01,761 - INFO - Rank 2 assigned 192 files (total size: 0.98 GB)
+<a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>2025-07-11 15:27:01,761 - INFO - Rank 2 assigned 192 out of 577 images
+<a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>2025-07-11 15:27:01,763 - INFO - [Rank 0/Worker 0] Processing 193 images
+<a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>Distributing images across 3 workers:
+<a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>  Rank 0: 193 images
+<a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>  Rank 1: 192 images
+<a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a>  Rank 2: 192 images
+<a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>
+<a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>Total unique files across all ranks: 577
+<a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a>Original total files: 577
+<a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a>
+<a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a>Example from Rank 0:
+<a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a>  First batch UUIDs: [&#39;A00000051603.jpg&#39;, &#39;A00000051179.jpg&#39;]
+</code></pre></div>
+<p>The output demonstrates successful distributed processing where the 577 beetle images are automatically partitioned across 3 workers. </p>
+<p>With <code>evenly_distribute=True</code>, the dataset balances workload by file sizes (~0.98 GB per rank) rather than just file counts, ensuring more balanced processing times. Rank 0 gets 193 images while ranks 1 and 2 each get 192 images. The verification confirms no overlap between ranks and that all original files are covered.</p>
+<div class="admonition info">
+<p class="admonition-title">Learn More About File Distribution</p>
+<p>The file distribution logic is handled by the <code>assign_files_to_rank</code> function. For detailed implementation and additional parameters, see the <a href="https://imageomics.github.io/hpc-inference/api-reference/#hpc_inference.utils.assign_files_to_rank">API Reference</a> and <a href="https://github.com/Imageomics/hpc-inference/blob/main/src/hpc_inference/utils/distributed.py">source code</a>.</p>
+</div>
+<h2 id="visualizing-processed-images">Visualizing Processed Images<a class="headerlink" href="#visualizing-processed-images" title="Permanent link">&para;</a></h2>
+<p>Let's visualize some images and their processed versions to understand what the preprocessing is doing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Create datasets for visualization</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="n">raw_dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span><span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">uuid_mode</span><span class="o">=</span><span class="s2">&quot;filename&quot;</span><span class="p">)</span>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">processed_dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span><span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="n">resnet_transform</span><span class="p">,</span> <span class="n">uuid_mode</span><span class="o">=</span><span class="s2">&quot;filename&quot;</span><span class="p">)</span>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="c1"># Get loaders - note the different collate functions needed</span>
+<a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="n">raw_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+<a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>    <span class="n">raw_dataset</span><span class="p">,</span> 
+<a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+<a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>    <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>    <span class="n">collate_fn</span><span class="o">=</span><span class="n">pil_image_collate</span>  <span class="c1"># Custom collate for PIL images</span>
+<a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="p">)</span>
+<a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="n">processed_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+<a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a>    <span class="n">processed_dataset</span><span class="p">,</span> 
+<a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>    <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+<a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>    <span class="n">num_workers</span><span class="o">=</span><span class="mi">0</span>
+<a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>    <span class="c1"># Default collate works fine for tensors</span>
+<a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="p">)</span>
+<a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>
+<a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a><span class="c1"># Function to denormalize tensor for visualization</span>
+<a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="k">def</span><span class="w"> </span><span class="nf">denormalize_tensor</span><span class="p">(</span><span class="n">tensor</span><span class="p">,</span> <span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]):</span>
+<a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Denormalize a tensor for visualization.&quot;&quot;&quot;</span>
+<a id="__codelineno-17-22" name="__codelineno-17-22" href="#__codelineno-17-22"></a>    <span class="n">mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">mean</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-17-23" name="__codelineno-17-23" href="#__codelineno-17-23"></a>    <span class="n">std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">std</span><span class="p">)</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-17-24" name="__codelineno-17-24" href="#__codelineno-17-24"></a>    <span class="k">return</span> <span class="n">tensor</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span>
+<a id="__codelineno-17-25" name="__codelineno-17-25" href="#__codelineno-17-25"></a>
+<a id="__codelineno-17-26" name="__codelineno-17-26" href="#__codelineno-17-26"></a><span class="c1"># Visualize first few images</span>
+<a id="__codelineno-17-27" name="__codelineno-17-27" href="#__codelineno-17-27"></a><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+<a id="__codelineno-17-28" name="__codelineno-17-28" href="#__codelineno-17-28"></a><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Original vs Processed Beetle Images&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+<a id="__codelineno-17-29" name="__codelineno-17-29" href="#__codelineno-17-29"></a>
+<a id="__codelineno-17-30" name="__codelineno-17-30" href="#__codelineno-17-30"></a><span class="n">raw_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">raw_loader</span><span class="p">)</span>
+<a id="__codelineno-17-31" name="__codelineno-17-31" href="#__codelineno-17-31"></a><span class="n">processed_iter</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">processed_loader</span><span class="p">)</span>
+<a id="__codelineno-17-32" name="__codelineno-17-32" href="#__codelineno-17-32"></a>
+<a id="__codelineno-17-33" name="__codelineno-17-33" href="#__codelineno-17-33"></a><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+<a id="__codelineno-17-34" name="__codelineno-17-34" href="#__codelineno-17-34"></a>    <span class="c1"># Get raw image</span>
+<a id="__codelineno-17-35" name="__codelineno-17-35" href="#__codelineno-17-35"></a>    <span class="n">uuid_raw</span><span class="p">,</span> <span class="n">img_raw</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">raw_iter</span><span class="p">)</span>
+<a id="__codelineno-17-36" name="__codelineno-17-36" href="#__codelineno-17-36"></a>    <span class="n">uuid_proc</span><span class="p">,</span> <span class="n">tensor_proc</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">processed_iter</span><span class="p">)</span>
+<a id="__codelineno-17-37" name="__codelineno-17-37" href="#__codelineno-17-37"></a>
+<a id="__codelineno-17-38" name="__codelineno-17-38" href="#__codelineno-17-38"></a>    <span class="c1"># Display original</span>
+<a id="__codelineno-17-39" name="__codelineno-17-39" href="#__codelineno-17-39"></a>    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_raw</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a id="__codelineno-17-40" name="__codelineno-17-40" href="#__codelineno-17-40"></a>    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Original: </span><span class="si">{</span><span class="n">uuid_raw</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<a id="__codelineno-17-41" name="__codelineno-17-41" href="#__codelineno-17-41"></a>    <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<a id="__codelineno-17-42" name="__codelineno-17-42" href="#__codelineno-17-42"></a>
+<a id="__codelineno-17-43" name="__codelineno-17-43" href="#__codelineno-17-43"></a>    <span class="c1"># Display processed (denormalized)</span>
+<a id="__codelineno-17-44" name="__codelineno-17-44" href="#__codelineno-17-44"></a>    <span class="n">denorm_tensor</span> <span class="o">=</span> <span class="n">denormalize_tensor</span><span class="p">(</span><span class="n">tensor_proc</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a id="__codelineno-17-45" name="__codelineno-17-45" href="#__codelineno-17-45"></a>    <span class="n">denorm_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="n">denorm_tensor</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-17-46" name="__codelineno-17-46" href="#__codelineno-17-46"></a>    <span class="n">img_processed</span> <span class="o">=</span> <span class="n">denorm_tensor</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+<a id="__codelineno-17-47" name="__codelineno-17-47" href="#__codelineno-17-47"></a>
+<a id="__codelineno-17-48" name="__codelineno-17-48" href="#__codelineno-17-48"></a>    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img_processed</span><span class="p">)</span>
+<a id="__codelineno-17-49" name="__codelineno-17-49" href="#__codelineno-17-49"></a>    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Processed: 224x224&#39;</span><span class="p">)</span>
+<a id="__codelineno-17-50" name="__codelineno-17-50" href="#__codelineno-17-50"></a>    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+<a id="__codelineno-17-51" name="__codelineno-17-51" href="#__codelineno-17-51"></a>
+<a id="__codelineno-17-52" name="__codelineno-17-52" href="#__codelineno-17-52"></a><span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+<a id="__codelineno-17-53" name="__codelineno-17-53" href="#__codelineno-17-53"></a><span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</code></pre></div>
+<p><div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>2025-07-11 15:34:04,113 - INFO - Rank 0 assigned 577 out of 577 images
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>2025-07-11 15:34:04,114 - INFO - Rank 0 assigned 577 out of 577 images
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>2025-07-11 15:34:04,179 - INFO - [Rank 0/Worker 0] Processing 577 images
+<a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>2025-07-11 15:34:04,282 - INFO - [Rank 0/Worker 0] Processing 577 images
+</code></pre></div>
+<img alt="Original vs Processed Beetle Images" src="../imgs/processed_beetles.png" /></p>
+<p>The top row shows the original high-resolution images (5568×3712 pixels). The bottom row shows the same images after ResNet preprocessing: resized to 224×224 pixels, center-cropped, and normalized.</p>
+<h2 id="performance-optimization">Performance Optimization<a class="headerlink" href="#performance-optimization" title="Permanent link">&para;</a></h2>
+<p>Let's explore some performance aspects of the <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a>:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="c1"># Test different configurations</span>
+<a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="n">configs</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Single worker&quot;</span><span class="p">,</span> <span class="s2">&quot;num_workers&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+<a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Multi worker&quot;</span><span class="p">,</span> <span class="s2">&quot;num_workers&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+<a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;Larger batch&quot;</span><span class="p">,</span> <span class="s2">&quot;num_workers&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;batch_size&quot;</span><span class="p">:</span> <span class="mi">16</span><span class="p">},</span>
+<a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="p">]</span>
+<a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>
+<a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="c1"># Create a dataset for performance testing</span>
+<a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="n">perf_dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span>
+<a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>    <span class="n">image_dir</span><span class="o">=</span><span class="n">image_dir</span><span class="p">,</span>
+<a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>    <span class="n">preprocess</span><span class="o">=</span><span class="n">resnet_transform</span><span class="p">,</span>
+<a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>    <span class="n">uuid_mode</span><span class="o">=</span><span class="s2">&quot;filename&quot;</span><span class="p">,</span>
+<a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>    <span class="n">validate</span><span class="o">=</span><span class="kc">False</span>
+<a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="p">)</span>
+<a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>
+<a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Performance comparison (processing first 50 images):&quot;</span><span class="p">)</span>
+<a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
+<a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a>
+<a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">configs</span><span class="p">:</span>
+<a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a>    <span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+<a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a>        <span class="n">perf_dataset</span><span class="p">,</span>
+<a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a>        <span class="n">batch_size</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">],</span>
+<a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a>        <span class="n">num_workers</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;num_workers&quot;</span><span class="p">],</span>
+<a id="__codelineno-19-26" name="__codelineno-19-26" href="#__codelineno-19-26"></a>        <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="kc">False</span>
+<a id="__codelineno-19-27" name="__codelineno-19-27" href="#__codelineno-19-27"></a>    <span class="p">)</span>
+<a id="__codelineno-19-28" name="__codelineno-19-28" href="#__codelineno-19-28"></a>
+<a id="__codelineno-19-29" name="__codelineno-19-29" href="#__codelineno-19-29"></a>    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<a id="__codelineno-19-30" name="__codelineno-19-30" href="#__codelineno-19-30"></a>    <span class="n">images_processed</span> <span class="o">=</span> <span class="mi">0</span>
+<a id="__codelineno-19-31" name="__codelineno-19-31" href="#__codelineno-19-31"></a>
+<a id="__codelineno-19-32" name="__codelineno-19-32" href="#__codelineno-19-32"></a>    <span class="k">for</span> <span class="n">uuids</span><span class="p">,</span> <span class="n">tensors</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+<a id="__codelineno-19-33" name="__codelineno-19-33" href="#__codelineno-19-33"></a>        <span class="n">images_processed</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">uuids</span><span class="p">)</span>
+<a id="__codelineno-19-34" name="__codelineno-19-34" href="#__codelineno-19-34"></a>        <span class="k">if</span> <span class="n">images_processed</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">:</span>  <span class="c1"># Stop after 50 images</span>
+<a id="__codelineno-19-35" name="__codelineno-19-35" href="#__codelineno-19-35"></a>            <span class="k">break</span>
+<a id="__codelineno-19-36" name="__codelineno-19-36" href="#__codelineno-19-36"></a>
+<a id="__codelineno-19-37" name="__codelineno-19-37" href="#__codelineno-19-37"></a>    <span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+<a id="__codelineno-19-38" name="__codelineno-19-38" href="#__codelineno-19-38"></a>    <span class="n">images_per_sec</span> <span class="o">=</span> <span class="n">images_processed</span> <span class="o">/</span> <span class="n">elapsed</span>
+<a id="__codelineno-19-39" name="__codelineno-19-39" href="#__codelineno-19-39"></a>
+<a id="__codelineno-19-40" name="__codelineno-19-40" href="#__codelineno-19-40"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">15</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">images_processed</span><span class="si">:</span><span class="s2">3d</span><span class="si">}</span><span class="s2"> images | &quot;</span>
+<a id="__codelineno-19-41" name="__codelineno-19-41" href="#__codelineno-19-41"></a>          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">5.2f</span><span class="si">}</span><span class="s2">s | </span><span class="si">{</span><span class="n">images_per_sec</span><span class="si">:</span><span class="s2">5.1f</span><span class="si">}</span><span class="s2"> img/s&quot;</span><span class="p">)</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>2025-07-11 15:35:18,793 - INFO - Rank 0 assigned 577 out of 577 images
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>2025-07-11 15:35:19,738 - INFO - [Rank 0/Worker 0] Processing 577 images
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>Performance comparison (processing first 50 images):
+<a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>------------------------------------------------------------
+<a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>Single worker   |  56 images | 14.47s |   3.9 img/s
+<a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>2025-07-11 15:35:34,238 - INFO - [Rank 0/Worker 0] Processing 289 images
+<a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>2025-07-11 15:35:34,238 - INFO - [Rank 0/Worker 1] Processing 288 images
+<a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>Multi worker    |  56 images |  7.79s |   7.2 img/s
+<a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>2025-07-11 15:35:42,006 - INFO - [Rank 0/Worker 0] Processing 289 images
+<a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>2025-07-11 15:35:42,009 - INFO - [Rank 0/Worker 1] Processing 288 images
+<a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>Larger batch    |  64 images |  8.65s |   7.4 img/s
+</code></pre></div>
+<p>The benchmark results reveal significant performance differences between configurations when processing high-resolution NEON beetle images. The single worker configuration achieved 3.9 images per second, while adding a second worker (<code>num_workers=2</code>) nearly doubled throughput to 7.2 images per second. This demonstrates that image preprocessing is I/O bound, as multiple workers can load and process images in parallel while one worker would otherwise be waiting for disk access.</p>
+<p>And interestingly, increasing the batch size from 8 to 16 while maintaining 2 workers showed only marginal improvement (7.4 vs 7.2 img/s), suggesting that the bottleneck shifts from I/O to processing capacity at higher batch sizes. </p>
+<div class="admonition tip">
+<p class="admonition-title">Scaling with Multiple Processes</p>
+<p>These performance numbers above represent throughput for a single process only. In distributed processing pipelines, you can dramatically increase overall throughput by starting multiple processes in parallel (increasing <code>world_size</code>). </p>
+<p>Each rank gets assigned balanced files as demonstrated in the distributed processing section, allowing total throughput to scale to approximately <strong>best per-rank performance × world_size</strong>. For example, if one process achieves 7.2 img/s, running 8 processes could theoretically reach ~57.6 img/s total throughput across the cluster.</p>
+</div>
+<h2 id="sampling-considerations">Sampling Considerations<a class="headerlink" href="#sampling-considerations" title="Permanent link">&para;</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">No Built-in Sampling Support</p>
+<p>The <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a> is built on top of PyTorch's <code>IterableDataset</code>, which means it doesn't support built-in sampling methods like random sampling, weighted sampling, or stratified sampling. If sampling is crucial for your task (e.g., handling class imbalance, creating balanced batches, or implementing specific sampling strategies), consider using PyTorch's standard <code>Dataset</code> class instead.</p>
+<p>For more details on why sufficient sampling is a complex problem see this excellent talk by Nicolas Hug: <a href="https://www.youtube.com/watch?v=Kx0BoPa9juQ">Implementing and Using Iterable Datasets: What Could Go Wrong?</a>.</p>
+</div>
+<p><strong>Alternative approaches for sampling with <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a>:</strong></p>
 <ul>
-<li>Start with <code>num_workers = num_gpus</code></li>
-<li>Monitor CPU usage to find optimal value</li>
-<li>Too many workers can cause overhead</li>
+<li>Create a subset of images before initializing the dataset</li>
+<li>Manually assign specific image subsets to different ranks</li>
+<li>For complex sampling needs, implement a custom <code>Dataset</code> subclass instead</li>
 </ul>
-<h3 id="3-use-pin-memory">3. Use Pin Memory<a class="headerlink" href="#3-use-pin-memory" title="Permanent link">&para;</a></h3>
+<h2 id="best-practices-and-tips">Best Practices and Tips<a class="headerlink" href="#best-practices-and-tips" title="Permanent link">&para;</a></h2>
+<p>Based on the examples above, here are key recommendations for using <a href="../api-reference/#hpc_inference.datasets.ImageFolderDataset"><code>ImageFolderDataset</code></a> effectively:</p>
+<h3 id="choose-the-right-uuid-mode">Choose the Right UUID Mode<a class="headerlink" href="#choose-the-right-uuid-mode" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Enable <code>pin_memory=True</code> for GPU processing</li>
-<li>Speeds up data transfer to GPU</li>
+<li>Use <code>"filename"</code> for simple cases where filenames are unique</li>
+<li>Use <code>"relative"</code> when you have subdirectories and need to preserve path structure</li>
+<li>Use <code>"hash"</code> for anonymization or when dealing with non-unique filenames across nested folders</li>
 </ul>
-<h3 id="4-handle-corrupted-files">4. Handle Corrupted Files<a class="headerlink" href="#4-handle-corrupted-files" title="Permanent link">&para;</a></h3>
+<h3 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Always validate your dataset before processing to avoid unexpected job crashing</li>
-<li>Implement error handling in your data loading pipeline</li>
-<li>Log corrupted files for investigation</li>
+<li>Enable <code>validate=True</code> when working with unknown image quality</li>
+<li>Disable it for trusted datasets to improve performance</li>
+<li>Validate image folder with PIL in advance to reduce GPU waiting time</li>
 </ul>
-<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
-<h3 id="common-issues">Common Issues<a class="headerlink" href="#common-issues" title="Permanent link">&para;</a></h3>
-<ol>
-<li><strong>Out of Memory Errors</strong></li>
-<li>Reduce batch size</li>
-<li>Reduce number of workers</li>
-<li>
-<p>Use gradient checkpointing</p>
-</li>
-<li>
-<p><strong>Slow Data Loading</strong></p>
-</li>
-<li>Increase number of workers</li>
-<li>Use faster storage (SSD vs HDD)</li>
-<li>
-<p>Optimize image formats</p>
-</li>
-<li>
-<p><strong>CUDA Errors</strong></p>
-</li>
-<li>Ensure CUDA compatibility</li>
-<li>Check GPU memory usage</li>
-<li>Verify data types and shapes</li>
-</ol>
+<h3 id="multi-model-processing">Multi-Model Processing<a class="headerlink" href="#multi-model-processing" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use multi-model preprocessing when you need different input formats</li>
+<li>Remember to use the <a href="../api-reference/#hpc_inference.utils"><code>multi_model_collate</code></a> function in your DataLoader</li>
+</ul>
+<h3 id="distributed-processing-performance-optimization">Distributed Processing &amp; Performance Optimization<a class="headerlink" href="#distributed-processing-performance-optimization" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Set <code>evenly_distribute=True</code> for better load balancing across workers</li>
+<li>Increase <code>num_workers</code> for I/O bound tasks</li>
+<li>Use <strong>larger batch sizes</strong> when memory allows</li>
+<li>Enable <code>pin_memory=True</code> when using GPU</li>
+</ul>
+<h3 id="collate-functions">Collate Functions<a class="headerlink" href="#collate-functions" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Use <a href="../api-reference/#hpc_inference.utils"><code>pil_image_collate</code></a> when <code>preprocess=None</code> (returning PIL Images)</li>
+<li>Use <a href="../api-reference/#hpc_inference.utils"><code>multi_model_collate</code></a> for multi-model preprocessing</li>
+<li>Use default collate function for single tensor outputs</li>
+</ul>
 
 
 
