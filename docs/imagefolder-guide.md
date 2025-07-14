@@ -458,7 +458,7 @@ plt.show()
 ```
 ![Original vs Processed Beetle Images](imgs/processed_beetles.png)
 
-The top row shows the original high-resolution images (5568×3712 pixels). The bottom row shows the same images after ResNet preprocessing: resized to 224×224 pixels, center-cropped, and normalized.
+The top row shows the original high-resolution images (5568×3712 pixels). The bottom row shows the same images after ResNet preprocessing: resized to 224×224 pixels, center-cropped, and de-normalized.
 
 ## Performance Optimization
 
