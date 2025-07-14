@@ -41,12 +41,7 @@ uv pip install -e ".[detection]"    # For face/animal detection
 uv pip install -e ".[all]"          # Install dependency for all use cases
 ```
 
-## Quick Start
+## Quick Start & Next Steps
 
-### Basic Usage
-
-
-
-### Next Steps
-
+- Check out the [ImageFolderDataset Guide](imagefolder-guide.md) for hands-on examples with scientific image datasets
 - Explore the [API Reference](api-reference.md) for detailed documentation
