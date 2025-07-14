@@ -1,8 +1,11 @@
 
 <table width="100%">
   <tr>
-    <td align="left" width="120">
-      <img src="docs/imgs/Imageomics_logo_butterfly.png" alt="OpenCut Logo" width="100" />
+    <td align="left" width="100">
+      <img src="docs/imgs/Imageomics_logo_butterfly.png" alt="Imageomics Logo" width="100" />
+    </td>
+    <td align="left" width="100">
+      <img src="docs/imgs/full_ABC_logo_for_web_and_digital.png" alt="ABC Logo" width="100" />
     </td>
     <td align="right">
       <h1>HPC-Inference</h1>
@@ -75,6 +78,11 @@ uv pip install -e ".[all]"          # Install dependency for all use cases
 
 ### Use Cases Guide
 
+#### `ImageFolderDataset`
+For a comprehensive tutorial on using the `ImageFolderDataset` class, please see this notebook: [ImageFolderDataset Guide](docs/ImageFolderDataset_guide.ipynb). 
+
+This guide demonstrates working with the [NEON Beetle dataset](https://huggingface.co/datasets/imageomics/2018-NEON-beetles) and covers basic usage, validation, multi-model preprocessing, distributed processing, and performance optimization. 
+
 Use case 1: 
 - Image Folder Dataset
 - Parquet Dataset
@@ -93,3 +101,7 @@ Use case 5:
 - Grid search profiling
 
 ## Project Structure
+
+## Acknowledgement
+
+This project is a joint effort between the [Imageomics Institute](https://imageomics.osu.edu/) and the [ABC Global Center](https://www.biodiversityai.org/).
