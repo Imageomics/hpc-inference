@@ -26,17 +26,27 @@ confidence_threshold: 0.5   # Minimum confidence score for face detections
                             # Lower values = more detections (including false positives)
                             # Higher values = fewer, more confident detections
 
+image_size: 1024            # Input image size for YOLO model (square format)
+                            # Larger sizes may improve detection accuracy but increase processing time
+
+# ---------------------------
+# Image Processing Settings
+# ---------------------------
+image_size: 1024            # Input image size for YOLO model (square)
+                            # Common values: 640, 1024, 1280
+                            # Larger sizes = more accurate but slower
+
 # ---------------------------
 # DataLoader Configurations
 # ---------------------------
-batch_size: 32          # Number of images per batch (adjust based on GPU memory)
+batch_size: 16          # Number of images per batch (adjust based on GPU memory)
 num_workers: 28         # Number of worker processes for data loading
-prefetch_factor: 32     # Number of batches prefetched by each worker
+prefetch_factor: 16     # Number of batches prefetched by each worker
 
 # ---------------------------
 # Parquet-Specific Settings
 # ---------------------------
-read_batch_size: 256    # Number of rows to read from Parquet at a time
+read_batch_size: 128    # Number of rows to read from Parquet at a time
                         # Larger values = more memory usage but potentially faster I/O
 
 # Columns to read from Parquet files (must exist in your data)
@@ -55,7 +65,7 @@ stagger: false           # Stagger worker start times to reduce I/O congestion
 # ---------------------------
 # Output Configurations
 # ---------------------------
-max_rows_per_file: 50000         # Maximum number of detection results per output file
+max_rows_per_file: 10000         # Maximum number of detection results per output file
 out_prefix: face_detection_results  # Prefix for output files
 
 # =============================================================================

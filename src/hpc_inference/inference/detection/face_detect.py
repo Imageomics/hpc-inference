@@ -12,15 +12,9 @@ import pyarrow.parquet as pq
 
 from ...datasets.parquet_dataset import ParquetImageDataset
 from ...datasets.image_folder_dataset import ImageFolderDataset
-from ...utils.common import format_time, decode_image, save_emb_to_parquet, load_config
+from ...utils.common import format_time, decode_image, load_config
 from ...utils import profiling
-
-try:
-    from ultralytics import YOLO
-    YOLO_AVAILABLE = True
-except ImportError:
-    YOLO_AVAILABLE = False
-    YOLO = None
+from .face_detector import FaceDetector
 
 import logging
 # Configure logging
@@ -29,61 +23,6 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[logging.StreamHandler()]
 )
-
-def check_yolo_dependencies() -> None:
-    """Check if YOLO dependencies are available."""
-    if not YOLO_AVAILABLE:
-        raise ImportError(
-            "Ultralytics YOLO is not installed. Install with: "
-            "pip install 'hpc-inference[yolo]' or pip install ultralytics"
-        )
-
-def preprocess_for_yolo(image_batch: torch.Tensor, device: str) -> torch.Tensor:
-    """
-    Preprocess images for YOLO face detection.
-    
-    Args:
-        image_batch: Tensor of shape (B, C, H, W) with values in [0, 1]
-        device: Device to keep tensors on
-        
-    Returns:
-        Tensor of shape (B, C, H, W) with values in [0, 255] as float32
-    """
-    # Scale to [0, 255] but keep as float32 for YOLO compatibility
-    images = (image_batch * 255.0).to(torch.float32).to(device)
-    return images
-
-def detect_faces_batch(model, images: torch.Tensor, conf_threshold: float = 0.5) -> List[float]:
-    """
-    Detect faces in a batch of images and return detection scores.
-    
-    Args:
-        model: YOLO model
-        images: Batch of images as tensor (B, C, H, W) 
-        conf_threshold: Confidence threshold for detections
-        
-    Returns:
-        List of detection scores (max confidence score per image)
-    """
-    # Run inference on the entire batch at once
-    results = model(images, verbose=False)
-    
-    # Process detection scores
-    detection_scores = []
-    for result in results:
-        if result.boxes is not None and len(result.boxes) > 0:
-            confidences = result.boxes.conf
-            # Keep operations on GPU until final conversion
-            valid_confidences = confidences[confidences >= conf_threshold]
-            if len(valid_confidences) > 0:
-                max_score = float(torch.max(valid_confidences).cpu())
-            else:
-                max_score = 0.0
-        else:
-            max_score = 0.0
-        detection_scores.append(max_score)
-    
-    return detection_scores
 
 def save_detection_results(uuids: List[str], scores: List[float], output_file: str) -> None:
     """Save detection results to parquet file using PyArrow for better performance."""
@@ -121,9 +60,6 @@ def main(
         input_type: Type of input data ("images" or "parquet").
         file_list: Optional file containing list of Parquet files to process.
     """
-    # Check required dependencies
-    check_yolo_dependencies()
-
     # Validate input type
     if input_type not in ["images", "parquet"]:
         raise ValueError(f"Invalid input_type: {input_type}. Must be 'images' or 'parquet'")
@@ -146,16 +82,15 @@ def main(
     
     device = f"cuda:{local_rank}" if torch.cuda.is_available() else "cpu"
 
-    # Load YOLO model
-    model_config = config["model"]
-    model = YOLO(model_config["weights"])
-    model = torch.compile(model.to(device))
-    model.eval()
+    # Initialize and load face detector
+    face_detector = FaceDetector(config, device)
+    face_detector.load_model()
     
     # Simple preprocessing for YOLO (just resize)
     from torchvision import transforms
+    image_size = config.get("image_size", 1024)
     preprocess = transforms.Compose([
-        transforms.Resize((1024, 1024)),  # TODO: make it configurable
+        transforms.Resize((image_size, image_size)),
         transforms.ToTensor()
     ])
 
@@ -245,13 +180,11 @@ def main(
         batch_stats = {"batch": batch_idx, "batch_size": len(uuids)}
 
         t0 = time.perf_counter()
-        # Preprocess for YOLO (keep as tensors)
-        #processed_images = preprocess_for_yolo(images, device)
         images = images.to(device)
         t1 = time.perf_counter()
         
-        # Run face detection
-        detection_scores = detect_faces_batch(model, images, conf_threshold)
+        # Run face detection using FaceDetector
+        detection_scores = face_detector.detect(images, conf_threshold)
         t2 = time.perf_counter()
         
         all_detection_scores.extend(detection_scores)
@@ -304,7 +237,7 @@ def main(
             "read_batch_size": config.get("read_batch_size", 128),
             "max_rows_per_file": config.get("max_rows_per_file", 10000),
             "task": "Face detection",
-            "model": model_config["weights"],
+            "model": config["model"]["weights"],
             "confidence_threshold": conf_threshold,
             "throughput": f"{n_imgs_processed/elapsed:.2f} images/sec" if n_imgs_processed > 0 else "0 images/sec",
             "total_images": n_imgs_processed,
@@ -335,6 +268,8 @@ if __name__ == "__main__":
                         help="YOLO model weights file (default: yolov8n-face.pt)")
     parser.add_argument("--confidence_threshold", type=float, default=0.5,
                         help="Confidence threshold for face detection (default: 0.5)")
+    parser.add_argument("--image_size", type=int, default=1024,
+                        help="Input image size for YOLO model (square, default: 1024)")
     
     # Compute arguments
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size for inference")
@@ -388,7 +323,8 @@ if __name__ == "__main__":
             "uuid_mode": args.uuid_mode,
             "evenly_distribute": args.evenly_distribute,
             "stagger": args.stagger,
-            "confidence_threshold": args.confidence_threshold
+            "confidence_threshold": args.confidence_threshold,
+            "image_size": args.image_size
         }
         print("Using command line arguments (no config file provided)")
 

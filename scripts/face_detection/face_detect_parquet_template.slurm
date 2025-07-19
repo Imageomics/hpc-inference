@@ -30,7 +30,7 @@ OUTPUT_DIR="/path/to/your/output_dir"          # [REQUIRED] Directory to save fa
 CONFIG_FILE="/path/to/your/face_detect_parquet_config.yaml"  # Path to YAML config file
 FILE_LIST="/path/to/your/file_list.txt"        # [OPTIONAL] File with list of Parquet files
 
-srun python -m hpc_inference.inference.face_detection.face_detect \
+srun python -m hpc_inference.inference.detection.face_detect \
     "${TARGET_DIR}" \
     "${OUTPUT_DIR}" \
     --input_type parquet \
@@ -40,17 +40,18 @@ srun python -m hpc_inference.inference.face_detection.face_detect \
 # Option 2: Use command line arguments (for quick testing)
 # Uncomment and modify the lines below, comment out the config version above
 #
-# srun python -m hpc_inference.inference.face_detection.face_detect \
+# srun python -m hpc_inference.inference.detection.face_detect \
 #     "${TARGET_DIR}" \
 #     "${OUTPUT_DIR}" \
 #     --input_type parquet \
 #     --model_weights "yolov8n-face.pt" \
 #     --confidence_threshold 0.5 \
-#     --batch_size 32 \
+#     --image_size 1024 \
+#     --batch_size 16 \
 #     --num_workers 28 \
-#     --prefetch_factor 32 \
-#     --read_batch_size 256 \
-#     --max_rows_per_file 50000 \
+#     --prefetch_factor 16 \
+#     --read_batch_size 128 \
+#     --max_rows_per_file 10000 \
 #     --out_prefix "face_detection_results" \
 #     --read_columns uuid image original_size resized_size \
 #     --evenly_distribute

@@ -29,7 +29,7 @@ OUTPUT_DIR="/path/to/your/output_dir"          # [REQUIRED] Directory to save fa
 # Option 1: Use config file (RECOMMENDED for production)
 CONFIG_FILE="/path/to/your/face_detect_config.yaml"  # Path to YAML config file
 
-srun python -m hpc_inference.inference.face_detection.face_detect \
+srun python -m hpc_inference.inference.detection.face_detect \
     "${TARGET_DIR}" \
     "${OUTPUT_DIR}" \
     --input_type images \
@@ -38,16 +38,17 @@ srun python -m hpc_inference.inference.face_detection.face_detect \
 # Option 2: Use command line arguments (for quick testing)
 # Uncomment and modify the lines below, comment out the config version above
 #
-# srun python -m hpc_inference.inference.face_detection.face_detect \
+# srun python -m hpc_inference.inference.detection.face_detect \
 #     "${TARGET_DIR}" \
 #     "${OUTPUT_DIR}" \
 #     --input_type images \
 #     --model_weights "yolov8n-face.pt" \
 #     --confidence_threshold 0.5 \
-#     --batch_size 32 \
+#     --image_size 1024 \
+#     --batch_size 16 \
 #     --num_workers 28 \
-#     --prefetch_factor 32 \
-#     --max_rows_per_file 50000 \
+#     --prefetch_factor 16 \
+#     --max_rows_per_file 10000 \
 #     --out_prefix "face_detection_results" \
 #     --uuid_mode filename \
 #     --evenly_distribute \
