@@ -55,9 +55,6 @@ class BaseDetector(ABC):
         if "weights" not in model_config:
             raise ValueError("Model config must contain 'weights' field")
             
-        if "weights" not in model_config:
-            raise ValueError("Model config must contain 'weights' field")
-            
         weights_path = model_config["weights"]
         logging.info(f"Loading YOLO model from: {weights_path}")
         
