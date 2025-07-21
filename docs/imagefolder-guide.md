@@ -1,6 +1,10 @@
 # ImageFolderDataset Guide: Working with NEON Beetle Images
 
-This guide demonstrates how to use the [`ImageFolderDataset`](api-reference.md#hpc_inference.datasets.ImageFolderDataset) class from the `hpc-inference` package with the [2018 NEON Beetles dataset](#dataset).
+This guide demonstrates how to use the [`ImageFolderDataset`](api-reference.md#hpc_inference.datasets.ImageFolderDataset) class from the `hpc-inference` package with the 2018 NEON Beetles dataset.[^1]
+
+[^1]: Fluck, I. E., Baiser, B., Wolcheski, R., Chinmian, I., & Record, S. (2024). 
+2018 NEON Ethanol-preserved Ground Beetles (Revision 7b3731d). 
+Hugging Face. https://doi.org/10.57967/hf/5252
 
 ## Overview
 
@@ -14,7 +18,7 @@ The [`ImageFolderDataset`](api-reference.md#hpc_inference.datasets.ImageFolderDa
 
 ## Dataset Overview
 
-The [2018 NEON Beetles dataset](#dataset) contains:
+The 2018 NEON Beetles dataset[^1] contains:
 - 577 high-resolution group images of ethanol-preserved beetles
 - Beetles collected from NEON ecological sites in 2018
 - Multiple beetles per image, organized by species
@@ -458,7 +462,7 @@ plt.show()
 ```
 ![Original vs Processed Beetle Images](imgs/processed_beetles.png)
 
-*Figure 1: Comparison of original vs processed NEON beetle images from the [2018 NEON Beetles dataset](#dataset). Top row shows original high-resolution images (5568×3712 pixels), bottom row shows the same images after ResNet preprocessing: resized to 224×224 pixels, center-cropped, and normalized.*
+*Figure 1: Comparison of original vs processed NEON beetle images from the 2018 NEON Beetles dataset[^1]. Top row shows original high-resolution images (5568×3712 pixels), bottom row shows the same images after ResNet preprocessing: resized to 224×224 pixels, center-cropped, and normalized.*
 
 
 ## Performance Optimization
@@ -575,35 +579,3 @@ Based on the examples above, here are key recommendations for using [`ImageFolde
 - Use [`multi_model_collate`](api-reference.md#hpc_inference.utils) for multi-model preprocessing
 - Use default collate function for single tensor outputs
 
-## References
-
-### Dataset
-
-This guide uses the [**2018 NEON Ethanol-preserved Ground Beetles**](https://huggingface.co/datasets/imageomics/2018-NEON-beetles) dataset from the Imageomics Institute. This dataset is composed of a collection of 577 images of ethanol-preserved beetles collected at [NEON](https://www.neonscience.org/) sites in 2018. Each image contains a collection of beetles of the same species from a single plot at the labeled site. In 2022, they were arranged on a lattice and photographed; the elytra length and width were then annotated for each individual in each image using Zooniverse.
-
-**Citation:**
-```
-Fluck, I. E., Baiser, B., Wolcheski, R., Chinmian, I., & Record, S. (2024). 
-2018 NEON Ethanol-preserved Ground Beetles (Revision 7b3731d). 
-Hugging Face. https://doi.org/10.57967/hf/5252
-```
-
-**BibTeX:**
-```bibtex
-@misc{Fluck2018_NEON_Beetle,
-  author = {Isadora E. Fluck and Benjamin Baiser and Riley Wolcheski and Isha Chinmian and Sydne Record},
-  title = {2018 NEON Ethanol-preserved Ground Beetles (Revision 7b3731d)},
-  year = {2024},
-  url = {https://huggingface.co/datasets/imageomics/2018-NEON-beetles},
-  doi = {10.57967/hf/5252},
-  publisher = {Hugging Face}
-}
-```
-
-**Liscensing Information**
-
-The dataset is licensed under [CC BY-SA](https://creativecommons.org/licenses/by-sa/4.0/).
-
-**Acknowledgments**
-
-We thank the National Ecological Observatory Network (NEON) for providing the original beetle specimens and the Imageomics Institute for curating and distributing this dataset.

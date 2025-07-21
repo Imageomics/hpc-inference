@@ -46,6 +46,7 @@ theme:
     - search.highlight
 
 markdown_extensions:
+  - footnotes
   - admonition
   - pymdownx.details
   - pymdownx.superfences
