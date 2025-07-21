@@ -56,7 +56,7 @@ openclip = [
 
 # Future model dependencies
 
-face_detection = [
+detection = [
     "ultralytics>=8.0.0"
 ]
 
@@ -64,7 +64,7 @@ face_detection = [
 # Combined inference extras
 inference = [
     "hpc-inference[openclip]",  # Add other models as you create them
-    "hpc-inference[face_detection]",
+    "hpc-inference[detection]",
 ]
 
 # All features
