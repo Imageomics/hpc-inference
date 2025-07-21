@@ -60,18 +60,16 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 # -------------------------------
 # --input_type images:     Tells the script to process image files from a directory
 # --model_weights:         Animal detection model file:
-#                          - "md_v5a.0.0.pt" (MegaDetector v5a, recommended for wildlife)
-#                          - "md_v5b.0.0.pt" (MegaDetector v5b, alternative)
-#                          - "yolov8n.pt" (YOLOv8 nano, fastest)
-#                          - "yolov8s.pt" (YOLOv8 small, balanced)
-#                          - "yolov8m.pt" (YOLOv8 medium, more accurate)
-#                          - "yolov8l.pt" (YOLOv8 large, most accurate)
+#                          Download available models from:
+#                          https://microsoft.github.io/CameraTraps/model_zoo/megadetector
+#                          MegaDetectorV6-Ultralytics-YoloV10-Extra is recommended for best performance
+#                          
 # --confidence_threshold:  Minimum confidence score for animal detections (0.0-1.0)
 #                          MegaDetector typically uses 0.2 as optimal threshold
 #                          Lower = more detections (including false positives)
 #                          Higher = fewer, more confident detections
 # --image_size:            Input image size for the model (square format)
-#                          MegaDetector v5 typically uses 1280
+#                          MegaDetector v5 typically uses 640 or 1280
 #                          Larger sizes improve accuracy but slow processing
 # --uuid_mode:             How to generate unique IDs from image paths:
 #                          - "filename": Use just the filename (image001.jpg)
@@ -123,20 +121,20 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 
 # PERFORMANCE TIPS FOR ANIMAL DETECTION ON IMAGE FOLDERS:
 # - Animal detection (especially MegaDetector) is more memory-intensive than face detection
-# - Start with smaller batch sizes (8 instead of 16) and increase if memory allows
+# - Start with smaller batch sizes and increase if memory allows
+# - if encountering OOM errors in data loaders:
+#   - Reduce number of workers (--num_workers)
+#   - Reduce prefetch factor (--prefetch_factor)
+#   - Increase CPUs per task (--cpus-per-task)
 # - Use --evenly_distribute for better load balancing when file sizes vary
 # - Use --validate_images if you suspect corrupted files (adds startup time)
 # - Consider --uuid_mode based on your downstream analysis needs
-# - MegaDetector confidence_threshold of 0.2 is typically optimal for wildlife images
-# - Choose model based on use case:
-#   * MegaDetector: Best for wildlife/camera trap images
-#   * YOLOv8: General purpose, good for various animal contexts
-# - For large datasets, consider converting to Parquet format first for better I/O performance
 
 # MEGADETECTOR MODEL NOTES:
+# - Pytorch Wildlife model zoos: https://microsoft.github.io/CameraTraps/model_zoo/megadetector/
 # - MegaDetector is specifically designed for wildlife camera trap images
 # - Trained on millions of camera trap images from around the world
-# - Detects animals, people, and vehicles with high accuracy
+# - Detects animals and people with high accuracy
 # - Works best on outdoor/natural settings
 # - May not perform as well on indoor pets or zoo animals
 # - Models will be automatically downloaded on first use
@@ -144,6 +142,5 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 
 # MODEL DOWNLOAD AND CACHING:
 # - Models will be automatically downloaded to ~/.cache/ultralytics/ on first use
-# - MegaDetector models are larger than standard YOLO models (~400MB vs ~50MB)
 # - Consider pre-downloading models before job execution:
-#   python -c "from ultralytics import YOLO; YOLO('md_v5a.0.0.pt')"
+#   wget https://zenodo.org/records/15398270/files/MDV6-yolov10-e-1280.pt?download=1
