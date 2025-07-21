@@ -15,8 +15,8 @@ nav:
 
 theme:
   name: material
-  logo: imgs/Imageomics_logo_butterfly.png
-  favicon: imgs/Imageomics_logo_butterfly.png
+  logo: imgs/Imageomics_ABC.png
+  favicon: imgs/Imageomics_ABC.png
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
@@ -46,6 +46,7 @@ theme:
     - search.highlight
 
 markdown_extensions:
+  - footnotes
   - admonition
   - pymdownx.details
   - pymdownx.superfences
@@ -68,6 +69,9 @@ plugins:
       handlers:
         python:
           paths: [src]
+
+extra_css:
+  - stylesheets/extra.css
 
 extra:
   social:
