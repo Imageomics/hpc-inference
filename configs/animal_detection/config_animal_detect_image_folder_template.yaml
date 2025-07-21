@@ -10,17 +10,8 @@
 # ---------------------------
 # MegaDetector model for animal detection
 model:
-  weights: md_v5a.0.0.pt      # MegaDetector model weights
-                              # Options:
-                              # - md_v5a.0.0.pt (MegaDetector v5a, recommended)
-                              # - md_v5b.0.0.pt (MegaDetector v5b, alternative)
-                              # - yolov8n.pt (YOLOv8 nano, general purpose)
-                              # - yolov8s.pt (YOLOv8 small, balanced)
-                              # - yolov8m.pt (YOLOv8 medium, more accurate)
-                              # - yolov8l.pt (YOLOv8 large, most accurate)
-                              # Custom trained models are also supported
-                              # For MegaDetector models, see:
-                              # https://github.com/microsoft/CameraTraps
+  weights: MDV6-yolov10-e-1280.pt      # MegaDetector model weights
+                                       # https://microsoft.github.io/CameraTraps/model_zoo/megadetector/
 
 # ---------------------------
 # Detection Parameters
@@ -31,17 +22,16 @@ confidence_threshold: 0.2   # Minimum confidence score for animal detections
                             # Higher values = fewer, more confident detections
 
 image_size: 1280            # Input image size for the model (square format)
-                            # MegaDetector v5 typically uses 1280
                             # Common values: 640, 1024, 1280
                             # Larger sizes may improve detection accuracy but increase processing time
 
 # ---------------------------
 # DataLoader Configurations
 # ---------------------------
-batch_size: 8               # Number of images per batch (adjust based on GPU memory)
+batch_size: 16              # Number of images per batch (adjust based on GPU memory)
                             # Animal detection (especially MegaDetector) can be memory-intensive
                             # Start with smaller batch sizes and increase if memory allows
-num_workers: 24             # Number of worker processes for data loading
+num_workers: 20             # Number of worker processes for data loading
 prefetch_factor: 8          # Number of batches prefetched by each worker
 
 # ---------------------------
@@ -66,8 +56,8 @@ stagger: false              # Stagger worker start times to reduce file system l
 # ---------------------------
 # Output Configurations
 # ---------------------------
-max_rows_per_file: 5000             # Maximum number of detection results per output file
-                                    # Animal detection results can be large due to multiple detections per image
+max_rows_per_file: 100000             # Maximum number of detection results per output file
+                                      # Animal detection results can be large due to multiple detections per image
 out_prefix: animal_detection_results  # Prefix for output files
 
 # =============================================================================
@@ -139,7 +129,7 @@ out_prefix: animal_detection_results  # Prefix for output files
 # - Consider using smaller image_size if memory is limited
 #
 # CPU/I-O Optimization:
-# - Increase num_workers for faster data loading (but watch CPU usage)
+# - Increase num_workers for faster data loading & prevent OOM crashes
 # - Increase prefetch_factor for better pipeline utilization
 #
 # Distributed Processing:
@@ -147,16 +137,16 @@ out_prefix: animal_detection_results  # Prefix for output files
 # - Set stagger=true if experiencing file system bottlenecks
 #
 # Detection Quality vs Speed:
-# - MegaDetector confidence_threshold of 0.2 is typically optimal
+# - MegaDetector confidence_threshold of 0.2 is typically optimal based on repo documentation
 # - Lower thresholds may find more animals but increase false positives
 # - Higher image_size improves accuracy but slows processing
 # - Choose appropriate model based on accuracy vs speed needs:
-#   * md_v5a.0.0.pt: Best for wildlife/camera trap images
+#   * MegaDetectorV6-Ultralytics-YoloV10-Extra: Most accurate, best for wildlife
 #   * YOLOv8 variants: General purpose object detection
 #
 # Model-Specific Notes:
 # - MegaDetector is specifically trained for wildlife camera trap images
-# - It detects animals, people, and vehicles with high accuracy
+# - It detects animals and people with high accuracy
 # - Works well on images from outdoor/natural settings
 # - May not perform as well on indoor or urban animal images
 # =============================================================================

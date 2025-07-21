@@ -300,7 +300,7 @@ if __name__ == "__main__":
     
     # Compute arguments
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size for inference")
-    parser.add_argument("--num_workers", type=int, default=28, help="Number of dataloader workers")
+    parser.add_argument("--num_workers", type=int, default=20, help="Number of dataloader workers")
     parser.add_argument("--prefetch_factor", type=int, default=16, help="Dataloader prefetch factor")
     parser.add_argument("--read_batch_size", type=int, default=128, help="Parquet read batch size")
     parser.add_argument("--max_rows_per_file", type=int, default=10000, help="Max rows per output file")
