@@ -45,6 +45,7 @@ dependencies = [
     "numpy>=1.21.0",           # Basic numpy operations
     "matplotlib>=3.5.0",       # Profiling plots and visualizations
     "psutil>=5.9.0",           # System resource monitoring
+    "pynvml>=11.5.0",          # GPU monitoring and profiling
     "tqdm>=4.64.0",            # Progress bars for profiling
 ]
 
@@ -56,10 +57,15 @@ openclip = [
 
 # Future model dependencies
 
+detection = [
+    "ultralytics>=8.0.0"
+]
+
 
 # Combined inference extras
 inference = [
     "hpc-inference[openclip]",  # Add other models as you create them
+    "hpc-inference[detection]",
 ]
 
 # All features

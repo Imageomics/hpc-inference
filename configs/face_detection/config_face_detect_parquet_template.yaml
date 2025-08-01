@@ -1,0 +1,151 @@
+# =============================================================================
+# Configuration File for Batch Face Detection from Parquet Files
+# =============================================================================
+# This configuration is optimized for face detection on Parquet files containing
+# encoded image data with metadata using YOLO models.
+# -----------------------------------------------------------------------------
+
+# ---------------------------
+# Model Configuration
+# ---------------------------
+# YOLO model for face detection
+model:
+  weights: yolov8n-face.pt  # YOLO face detection model weights
+                           # Options:
+                           # - yolov8n-face.pt (fastest, least accurate)
+                           # - yolov8s-face.pt (balanced)
+                           # - yolov8m-face.pt (more accurate)
+                           # - yolov8l-face.pt (most accurate, slowest)
+                           # Custom trained models are also supported
+                           # For more models, see:
+                           # https://github.com/akanametov/yolo-face?tab=readme-ov-file#models
+# ---------------------------
+# Detection Parameters
+# ---------------------------
+confidence_threshold: 0.5   # Minimum confidence score for face detections
+                            # Lower values = more detections (including false positives)
+                            # Higher values = fewer, more confident detections
+
+image_size: 1024            # Input image size for YOLO model (square format)
+                            # Larger sizes may improve detection accuracy but increase processing time
+
+# ---------------------------
+# Image Processing Settings
+# ---------------------------
+image_size: 1024            # Input image size for YOLO model (square)
+                            # Common values: 640, 1024, 1280
+                            # Larger sizes = more accurate but slower
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 16          # Number of images per batch (adjust based on GPU memory)
+num_workers: 28         # Number of worker processes for data loading
+prefetch_factor: 16     # Number of batches prefetched by each worker
+
+# ---------------------------
+# Parquet-Specific Settings
+# ---------------------------
+read_batch_size: 128    # Number of rows to read from Parquet at a time
+                        # Larger values = more memory usage but potentially faster I/O
+
+# Columns to read from Parquet files (must exist in your data)
+read_columns:
+  - uuid              # [REQUIRED] Unique identifier for each image
+  - image             # [REQUIRED] Encoded image bytes (JPEG, PNG, etc.)
+  - original_size     # [OPTIONAL] Original image dimensions
+  - resized_size      # [OPTIONAL] Resized image dimensions
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true  # Distribute files based on size for load balancing
+stagger: false           # Stagger worker start times to reduce I/O congestion
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_rows_per_file: 10000         # Maximum number of detection results per output file
+out_prefix: face_detection_results  # Prefix for output files
+
+# =============================================================================
+# USAGE EXAMPLES:
+# =============================================================================
+# 
+# For Parquet files:
+# python face_detect.py /path/to/parquet_dir /path/to/output --input_type parquet --config config_face_detect_parquet_template.yaml
+#
+# With file list:
+# python face_detect.py /path/to/parquet_dir /path/to/output --input_type parquet --file_list files.txt --config config_face_detect_parquet_template.yaml
+# =============================================================================
+
+# =============================================================================
+# PARQUET DATA REQUIREMENTS:
+# =============================================================================
+# Your Parquet files must contain:
+# 1. 'uuid' column: Unique string identifier for each image
+# 2. 'image' column: Image data encoded as bytes (from PIL Image.save() to BytesIO)
+# 3. Optional metadata columns as specified in read_columns
+#
+# Example of creating compatible Parquet data:
+# ```python
+# import io
+# from PIL import Image
+# import pandas as pd
+# import pyarrow.parquet as pq
+# 
+# # Encode image to bytes
+# img = Image.open('image.jpg')
+# img_bytes = io.BytesIO()
+# img.save(img_bytes, format='JPEG')
+# img_bytes = img_bytes.getvalue()
+# 
+# # Create DataFrame
+# df = pd.DataFrame({
+#     'uuid': ['img_001'],
+#     'image': [img_bytes],
+#     'original_size': [(1024, 768)],
+#     'resized_size': [(640, 640)]
+# })
+# 
+# # Save to Parquet
+# df.to_parquet('images.parquet')
+# ```
+# =============================================================================
+
+# =============================================================================
+# OUTPUT FORMAT:
+# =============================================================================
+# The script outputs Parquet files containing:
+# - uuid: Unique identifier for each image (from input Parquet)
+# - detection_score: Maximum confidence score for face detection (0.0 if no faces detected)
+#
+# Files are saved in: {output_dir}/detections/rank_{rank}/
+# Example output:
+# face_detection_results_rank_0_0.parquet
+# face_detection_results_rank_0_1.parquet
+# ...
+# =============================================================================
+
+# =============================================================================
+# PERFORMANCE TUNING GUIDELINES:
+# =============================================================================
+# 
+# GPU Memory Optimization:
+# - Reduce batch_size if running out of GPU memory
+# - Face detection is typically less memory-intensive than embedding
+#
+# CPU/I-O Optimization:
+# - Increase num_workers for faster data loading (but watch CPU usage)
+# - Increase prefetch_factor for better pipeline utilization
+# - Increase read_batch_size for faster Parquet I/O
+#
+# Distributed Processing:
+# - Use evenly_distribute=true for better load balancing
+# - Set stagger=true if experiencing I/O bottlenecks
+#
+# Detection Quality vs Speed:
+# - Lower confidence_threshold = more detections but more false positives
+# - Higher confidence_threshold = fewer but more reliable detections
+# - Choose appropriate YOLO model size based on accuracy vs speed needs
+# =============================================================================
