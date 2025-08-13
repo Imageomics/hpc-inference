@@ -1,0 +1,191 @@
+# =============================================================================
+# Configuration File for Batch Animal Detection from Parquet Files
+# =============================================================================
+# This configuration is optimized for animal detection on Parquet files containing
+# encoded image data with metadata using MegaDetector models.
+# -----------------------------------------------------------------------------
+
+# ---------------------------
+# Model Configuration
+# ---------------------------
+# MegaDetector model for animal detection
+model:
+  weights: md_v5a.0.0.pt      # MegaDetector model weights
+                              # Options:
+                              # - md_v5a.0.0.pt (MegaDetector v5a, recommended)
+                              # - md_v5b.0.0.pt (MegaDetector v5b, alternative)
+                              # - yolov8n.pt (YOLOv8 nano, general purpose)
+                              # - yolov8s.pt (YOLOv8 small, balanced)
+                              # - yolov8m.pt (YOLOv8 medium, more accurate)
+                              # - yolov8l.pt (YOLOv8 large, most accurate)
+                              # Custom trained models are also supported
+                              # For MegaDetector models, see:
+                              # https://github.com/microsoft/CameraTraps
+
+# ---------------------------
+# Detection Parameters
+# ---------------------------
+confidence_threshold: 0.2   # Minimum confidence score for animal detections
+                            # MegaDetector typically uses 0.2 as default threshold
+                            # Lower values = more detections (including false positives)
+                            # Higher values = fewer, more confident detections
+
+image_size: 1280            # Input image size for the model (square format)
+                            # MegaDetector v5 typically uses 1280
+                            # Common values: 640, 1024, 1280
+                            # Larger sizes may improve detection accuracy but increase processing time
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 8               # Number of images per batch (adjust based on GPU memory)
+                            # Animal detection (especially MegaDetector) can be memory-intensive
+                            # Start with smaller batch sizes and increase if memory allows
+num_workers: 24             # Number of worker processes for data loading
+prefetch_factor: 8          # Number of batches prefetched by each worker
+
+# ---------------------------
+# Parquet-Specific Settings
+# ---------------------------
+read_batch_size: 64         # Number of rows to read from Parquet at a time
+                            # Smaller than embedding tasks due to larger detection output per image
+
+# Columns to read from Parquet files (must exist in your data)
+read_columns:
+  - uuid              # [REQUIRED] Unique identifier for each image
+  - image             # [REQUIRED] Encoded image bytes (JPEG, PNG, etc.)
+  - original_size     # [OPTIONAL] Original image dimensions
+  - resized_size      # [OPTIONAL] Resized image dimensions
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true     # Distribute files based on size for load balancing
+stagger: false              # Stagger worker start times to reduce I/O congestion
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_rows_per_file: 5000             # Maximum number of detection results per output file
+                                    # Animal detection results can be large due to multiple detections per image
+out_prefix: animal_detection_results  # Prefix for output files
+
+# =============================================================================
+# USAGE EXAMPLES:
+# =============================================================================
+# 
+# For Parquet files:
+# python animal_detect.py /path/to/parquet_dir /path/to/output --input_type parquet --config config_animal_detect_parquet_template.yaml
+#
+# With file list:
+# python animal_detect.py /path/to/parquet_dir /path/to/output --input_type parquet --file_list files.txt --config config_animal_detect_parquet_template.yaml
+# =============================================================================
+
+# =============================================================================
+# PARQUET DATA REQUIREMENTS:
+# =============================================================================
+# Your Parquet files must contain:
+# 1. 'uuid' column: Unique string identifier for each image
+# 2. 'image' column: Image data encoded as bytes (from PIL Image.save() to BytesIO)
+# 3. Optional metadata columns as specified in read_columns
+#
+# Example of creating compatible Parquet data:
+# ```python
+# import io
+# from PIL import Image
+# import pandas as pd
+# import pyarrow.parquet as pq
+# 
+# # Encode image to bytes
+# img = Image.open('image.jpg')
+# img_bytes = io.BytesIO()
+# img.save(img_bytes, format='JPEG')
+# img_bytes = img_bytes.getvalue()
+# 
+# # Create DataFrame
+# df = pd.DataFrame({
+#     'uuid': ['img_001'],
+#     'image': [img_bytes],
+#     'original_size': [(1024, 768)],
+#     'resized_size': [(1280, 1280)]
+# })
+# 
+# # Save to Parquet
+# df.to_parquet('images.parquet')
+# ```
+# =============================================================================
+
+# =============================================================================
+# OUTPUT FORMAT:
+# =============================================================================
+# The script outputs Parquet files containing:
+# - uuid: Unique identifier for each image (from input Parquet)
+# - max_detection_score: Maximum confidence score across all detections (0.0 if no animals detected)
+# - num_detections: Total number of detections above threshold
+# - detections: JSON string containing detailed detection information
+#
+# Each detection in the JSON includes:
+# - bbox: Absolute pixel coordinates [x1, y1, x2, y2]
+# - bbox_normalized: Normalized coordinates [0-1]
+# - confidence: Detection confidence score
+# - class_id: Numeric class ID (0=animal, 1=person, 2=vehicle for MegaDetector)
+# - class_name: Human-readable class name
+#
+# Files are saved in: {output_dir}/detections/rank_{rank}/
+# Example output:
+# animal_detection_results_rank_0_0.parquet
+# animal_detection_results_rank_0_1.parquet
+# ...
+#
+# Example detection JSON structure:
+# [
+#   {
+#     "bbox": [120.5, 80.2, 340.8, 290.1],
+#     "bbox_normalized": [0.118, 0.078, 0.333, 0.284],
+#     "confidence": 0.85,
+#     "class_id": 0,
+#     "class_name": "animal"
+#   },
+#   {
+#     "bbox": [450.0, 200.0, 600.0, 400.0],
+#     "bbox_normalized": [0.440, 0.195, 0.586, 0.391],
+#     "confidence": 0.72,
+#     "class_id": 1,
+#     "class_name": "person"
+#   }
+# ]
+# =============================================================================
+
+# =============================================================================
+# PERFORMANCE TUNING GUIDELINES:
+# =============================================================================
+# 
+# GPU Memory Optimization:
+# - Reduce batch_size if running out of GPU memory
+# - MegaDetector can be memory-intensive, especially at high resolutions
+# - Consider using smaller image_size if memory is limited
+#
+# CPU/I-O Optimization:
+# - Increase num_workers for faster data loading (but watch CPU usage)
+# - Increase prefetch_factor for better pipeline utilization
+# - Adjust read_batch_size for optimal Parquet I/O performance
+#
+# Distributed Processing:
+# - Use evenly_distribute=true for better load balancing
+# - Set stagger=true if experiencing I/O bottlenecks
+#
+# Detection Quality vs Speed:
+# - MegaDetector confidence_threshold of 0.2 is typically optimal
+# - Lower thresholds may find more animals but increase false positives
+# - Higher image_size improves accuracy but slows processing
+# - Choose appropriate model based on accuracy vs speed needs:
+#   * md_v5a.0.0.pt: Best for wildlife/camera trap images
+#   * YOLOv8 variants: General purpose object detection
+#
+# Model-Specific Notes:
+# - MegaDetector is specifically trained for wildlife camera trap images
+# - It detects animals, people, and vehicles with high accuracy
+# - Works well on images from outdoor/natural settings
+# - May not perform as well on indoor or urban animal images
+# - Provides both detection and rough classification capabilities
+# =============================================================================
