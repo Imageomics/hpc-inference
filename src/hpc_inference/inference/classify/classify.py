@@ -8,10 +8,10 @@ from pathlib import Path
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from src.inference.classify.similarity import get_predictions
-from src.datasets.ParquetIterableDataset import ParquetEmbeddingDataset
-from src.utils import format_time
-import src.profiling as profiling
+from .similarity import get_predictions
+from ...datasets.parquet_dataset import ParquetEmbeddingDataset
+from ...utils.common import format_time
+from ...utils import profiling
 
 import logging
 # Configure logging
@@ -80,11 +80,10 @@ def main(
     dataset = ParquetEmbeddingDataset(
         parquet_files,
         col_uuid="uuid",
-        col_embedding="embedding",
+        col_embedding="emb_Vit_L_14",
         rank=global_rank, world_size=world_size, 
         evenly_distribute=True,
-        read_batch_size=read_batch_size,
-        processed_files_log = None
+        read_batch_size=read_batch_size
     )
 
     loader = DataLoader(
