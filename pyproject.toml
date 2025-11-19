@@ -47,9 +47,14 @@ dependencies = [
     "psutil>=5.9.0",           # System resource monitoring
     "pynvml>=11.5.0",          # GPU monitoring and profiling
     "tqdm>=4.64.0",            # Progress bars for profiling
+    "h5py>=3.7.0",             # HDF5 file format support
 ]
 
 [project.optional-dependencies]
+# Dataset Conversion
+conversion = [
+    "webdataset>=0.2.0",
+]
 # OpenCLIP inference dependencies
 openclip = [
     "open-clip-torch>=2.20.0",
@@ -70,7 +75,7 @@ inference = [
 
 # All features
 all = [
-    "hpc-inference[inference]",
+    "hpc-inference[inference,conversion]",
 ]
 
 # Development dependencies
