@@ -12,6 +12,7 @@ import pyarrow.parquet as pq
 
 from ...datasets.parquet_dataset import ParquetImageDataset
 from ...datasets.image_folder_dataset import ImageFolderDataset
+from ...datasets.hdf5_dataset import HDF5ImageDataset
 from ...utils.common import format_time, decode_image, load_config
 from ...utils import profiling
 from .face_detector import FaceDetector
@@ -55,14 +56,14 @@ def main(
     
     Args:
         config: Configuration dictionary containing model and processing parameters.
-        target_dir: Directory containing input data (Parquet files or images).
+        target_dir: Directory containing input data (Parquet files, HDF5 files, or images).
         output_dir: Directory to save output detection results and profiles.
-        input_type: Type of input data ("images" or "parquet").
-        file_list: Optional file containing list of Parquet files to process.
+        input_type: Type of input data ("images", "parquet", or "hdf5").
+        file_list: Optional file containing list of Parquet or HDF5 files to process.
     """
     # Validate input type
-    if input_type not in ["images", "parquet"]:
-        raise ValueError(f"Invalid input_type: {input_type}. Must be 'images' or 'parquet'")
+    if input_type not in ["images", "parquet", "hdf5"]:
+        raise ValueError(f"Invalid input_type: {input_type}. Must be 'images', 'parquet', or 'hdf5'")
 
     # =============== #
     # ---- Setup ----
@@ -108,6 +109,37 @@ def main(
             stagger=config.get("stagger", False),
             uuid_mode=config.get("uuid_mode", "filename")
         )
+    elif input_type == "hdf5":
+        logging.info(f"Processing HDF5 files from: {target_dir}")
+        
+        # Find all HDF5 files in the target directory
+        target_path = Path(target_dir)
+        h5_files = []
+        
+        if file_list is None:
+            h5_files = [str(p) for p in target_path.rglob('*.h5')]
+            logging.info(f"Found {len(h5_files)} HDF5 files in {target_dir}")
+        else:
+            file_list_path = Path(file_list)
+            if file_list_path.exists():
+                with open(file_list_path, "r") as f:
+                    h5_files = [line.strip() for line in f if line.strip().endswith('.h5')]
+                logging.info(f"Loaded {len(h5_files)} HDF5 files from {file_list}")
+            else:
+                raise FileNotFoundError(f"File list not found: {file_list}")
+        
+        if not h5_files:
+            raise ValueError(f"No HDF5 files found in {target_dir}")
+        
+        dataset = HDF5ImageDataset(
+            h5_files,
+            rank=global_rank,
+            world_size=world_size,
+            evenly_distribute=config.get("evenly_distribute", True),
+            preprocess=preprocess,
+            stagger=config.get("stagger", False)
+        )
+        
         
     elif input_type == "parquet":
         logging.info(f"Processing Parquet files from: {target_dir}")
@@ -257,11 +289,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="YOLO Face Detection with Config File or Command Line Arguments")
     parser.add_argument("target_dir", type=str, help="Directory containing input data")
     parser.add_argument("output_dir", type=str, help="Directory to save output detection results")
-    parser.add_argument("--input_type", type=str, required=True, choices=["images", "parquet"],
-                        help="Type of input data: 'images' for image directory, 'parquet' for Parquet files")
+    parser.add_argument("--input_type", type=str, required=True, choices=["images", "parquet", "hdf5"],
+                        help="Type of input data: 'images' for image directory, 'parquet' for Parquet files, 'hdf5' for HDF5 files")
     parser.add_argument("--config", type=str, default=None, help="Path to YAML config file (optional)")
     parser.add_argument("--file_list", type=str, default=None,
-                        help="File containing list of Parquet files to process (only for --input_type parquet)")
+                        help="File containing list of Parquet or HDF5 files to process (only for --input_type parquet or hdf5)")
     
     # Model configuration arguments (used when no config file provided)
     parser.add_argument("--model_weights", type=str, default="yolov8n-face.pt", 
@@ -296,11 +328,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Validate argument combinations
-    if args.input_type == "parquet" and args.file_list and not os.path.exists(args.file_list):
+    if args.file_list and not os.path.exists(args.file_list):
         parser.error(f"File list does not exist: {args.file_list}")
     
     if args.input_type == "images" and args.file_list:
-        parser.error("--file_list is only applicable when --input_type is 'parquet'")
+        parser.error("--file_list is only applicable when --input_type is 'parquet' or 'hdf5'")
 
     # Load config or create from arguments
     if args.config:
