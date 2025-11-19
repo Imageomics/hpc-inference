@@ -98,7 +98,6 @@ docs = [
 Homepage = "https://github.com/Imageomics/hpc-inference"
 Documentation = "https://imageomics.github.io/hpc-inference/"
 Repository = "https://github.com/Imageomics/hpc-inference"
-Changelog = "https://github.com/Imageomics/hpc-inference/blob/main/CHANGELOG.md"
 "Bug Tracker" = "https://github.com/Imageomics/hpc-inference/issues"
 
 [tool.hatch.version]

@@ -12,7 +12,7 @@ The animal detection module provides high-performance batch processing of images
 
 ### Key Features
 
-- **MegaDetector Support**: Optimized for Microsoft's MegaDetector models (specifically designed for wildlife camera trap images)
+- **MegaDetector Support**: Optimized for [Pytorch-Wildlife-model-weights](https://zenodo.org/records/15398270), specifically, the Megadetector models designed for wildlife camera trap images.
 - **Multiple Input Types**: Process image directories or Parquet datasets
 - **Distributed Processing**: Multi-GPU and multi-node support via SLURM
 - **Efficient Data Pipeline**: Optimized data loading with prefetching and parallel processing
@@ -166,11 +166,11 @@ The script supports flexible directory structures:
 
 **Supported Image Formats:**
 
-- JPEG (.jpg, .jpeg)
-- PNG (.png)
-- BMP (.bmp)
-- TIFF (.tif, .tiff)
-- WebP (.webp)
+- JPEG (`.jpg`, `.jpeg`)
+- PNG (`.png`)
+- BMP (`.bmp`)
+- TIFF (`.tif`, `.tiff`)
+- WebP (`.webp`)
 
 All images are automatically converted to RGB mode for processing.
 
@@ -193,7 +193,7 @@ Learn more about the parquet file specific configuration in the config section.
 
 Configuration files provide better reproducibility and easier parameter management. 
 
-You can find documented template for config specification in `configs/animal_detection`
+You can find documented templates for config specification in `configs/animal_detection`.
 
 <details>
 <summary>Image Folder Dataset Config Template</summary>
@@ -512,7 +512,7 @@ for detection in detections:
   'class_name': 'animal'}]
 ```
 
-Megadetector detected one animal with high confident 0.8981. Let's use the utility function to plot the detection box on top of the original image to validate the detection result:
+Megadetector detected one animal with high confidence (0.8981). Let's use the utility function to plot the detection box on top of the original image to validate the detection result:
 
 ```python
 from hpc_inference.utils.visualization import plot_detections_matplotlib
@@ -529,7 +529,7 @@ plot_detections_matplotlib(
     title=f"Detections for {image_uuid}"
 )
 ```
-![Original vs Processed Beetle Images](imgs/detection_box.png)
+![Image 00170382-1e3d-4d46-9243-ac78136922ba.png with bounding box overlay for detection, original image from](imgs/detection_box.png)
 
 !!!note
     Notice we specified `letterbox_shape=(1280, 1280)` for the `letterbox_shape` argument. This matches the default `image_size: 1280` used during preprocessing for MegaDetector in our script. 
