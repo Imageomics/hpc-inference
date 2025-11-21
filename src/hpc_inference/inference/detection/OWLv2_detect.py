@@ -1,24 +1,20 @@
 import time
 import threading
 import torch
-import numpy as np
 from torch.utils.data import DataLoader
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Optional, Union, Any, List
+from typing import Dict, Optional, Union, Any, List, Tuple
 import pyarrow as pa
 import pyarrow.parquet as pq
-import pandas as pd
-import json
 
-from transformers import Owlv2Processor, Owlv2ForObjectDetection
+from transformers import Owlv2Processor, Owlv2ForObjectDetection, BatchFeature
 
 from ...datasets.parquet_dataset import ParquetImageDataset
 from ...datasets.image_folder_dataset import ImageFolderDataset
 from ...utils.common import format_time, decode_image
 from ...utils import profiling
-from ...utils.distributed import pil_image_collate
 
 import logging
 # Configure logging
@@ -45,6 +41,49 @@ def _to_cpu(obj):
         return [_to_cpu(x) for x in obj]
     else:
         return obj
+
+def owlv2_collate(batch: List[Tuple[str, Dict[str, torch.Tensor]]]) -> Tuple[List[str], Dict[str, torch.Tensor]]:
+    """
+    Custom collate function for OWLv2 processor outputs.
+    
+    OWLv2 processor outputs have a specific structure where text queries are duplicated
+    for each image in the batch. This function properly concatenates the processor outputs
+    from individual samples into a single batched input for the model.
+    
+    The processor output contains:
+        - input_ids: Token IDs for text queries (shape: [num_queries, seq_len])
+        - attention_mask: Attention mask for text (shape: [num_queries, seq_len])
+        - pixel_values: Image tensors (shape: [1, 3, H, W])
+    
+    Args:
+        batch: List of (uuid, processor_output) tuples where processor_output is a dict
+               containing 'input_ids', 'attention_mask', and 'pixel_values' tensors.
+    
+    Returns:
+        Tuple containing:
+            - uuids: List of UUID strings from the batch
+            - collated_dict: Dict with properly batched tensors:
+                * input_ids: [batch_size * num_queries, seq_len]
+                * attention_mask: [batch_size * num_queries, seq_len]
+                * pixel_values: [batch_size, 3, H, W]
+            - image_size_list: List of image sizes (width, height) from the batch
+    """
+    uuids, processed_list, image_size_list = zip(*batch)
+    
+    collated_dict = {}
+    
+    # Concatenate text-related tensors along batch dimension
+    # input_ids and attention_mask: concatenate all queries from all images
+    collated_dict['input_ids'] = torch.cat([d['input_ids'] for d in processed_list], dim=0)
+    collated_dict['attention_mask'] = torch.cat([d['attention_mask'] for d in processed_list], dim=0)
+    
+    # Stack pixel_values: each sample has shape [1, 3, H, W], stack to [batch_size, 3, H, W]
+    collated_dict['pixel_values'] = torch.cat([d['pixel_values'] for d in processed_list], dim=0)
+    
+    model_inputs = BatchFeature(data = collated_dict, tensor_type="pt")
+    
+    return list(uuids), model_inputs, list(image_size_list)
+
 
 def save_detection_results(uuids: List[str], detection_results: List[Dict[str, Any]], output_file: str) -> None:
     
@@ -205,8 +244,13 @@ def main(
     processor = Owlv2Processor.from_pretrained(PRETRAINED_MODEL_NAME)
     model = Owlv2ForObjectDetection.from_pretrained(PRETRAINED_MODEL_NAME)
     model.to(device)
-    torch.compile(model)
+    model = torch.compile(model)
     model.eval()
+
+    text_label_list = config.get("text_labels", ["fish"])
+    def preprocess_with_processor(image):
+        return processor(text=[text_label_list], images=[image], return_tensors="pt")
+
     
     # Create dataset based on input type
     if input_type == "images":
@@ -214,13 +258,14 @@ def main(
         
         dataset = ImageFolderDataset(
             target_dir, 
-            preprocess=None,
+            preprocess=preprocess_with_processor,
             validate=config.get("validate_images", False),
             rank=global_rank,
             world_size=world_size,
             evenly_distribute=config.get("evenly_distribute", True),
             stagger=config.get("stagger", False),
-            uuid_mode=config.get("uuid_mode", "filename")
+            uuid_mode=config.get("uuid_mode", "filename"),
+            return_image_size=True
         )
         
     elif input_type == "parquet":
@@ -255,11 +300,12 @@ def main(
             world_size=world_size,  
             evenly_distribute=config.get("evenly_distribute", True),
             decode_fn=decode_image,
-            preprocess=None,  
+            preprocess=preprocess_with_processor,  
             read_batch_size=config.get("read_batch_size", 128),
             read_columns=config.get("read_columns", ["uuid", "original_size", "resized_size", "image"]),
             stagger=config.get("stagger", False),
-            processed_files_log=processed_files_log
+            processed_files_log=processed_files_log,
+            return_image_size=True
         )
     
     loader = DataLoader(
@@ -269,7 +315,7 @@ def main(
         num_workers=config.get("num_workers", 28),
         pin_memory=True,
         prefetch_factor=config.get("prefetch_factor", 16),
-        collate_fn=pil_image_collate
+        collate_fn=owlv2_collate
     )
 
     all_detection_results = []
@@ -289,35 +335,34 @@ def main(
     max_uuids_per_file = config.get("max_uuids_per_file", 10000)
     out_prefix = config.get("out_prefix", "OWLv2_detection_results")
     conf_threshold = config.get("confidence_threshold", 0.1)
-    text_label_list = config.get("text_labels", ["fish"])
-    
-    for batch_idx, (uuids, images) in enumerate(loader):
-        batch_stats = {"batch": batch_idx, "batch_size": len(uuids)}
+
+    for batch_idx, (uuids, inputs, image_size_list) in enumerate(loader):
         
+        batch_stats = {"batch": batch_idx, "batch_size": len(uuids)}
         text_labels = [text_label_list for _ in range(len(uuids))]
-        target_sizes = [img.size[::-1] for img in images]
         
         t0 = time.perf_counter()
-        inputs = processor(text=text_labels, images=images, return_tensors="pt").to(device)
+        inputs = inputs.to(device)
         t1 = time.perf_counter()
-        
-        # Zero-shot detection
+            
         outputs = model(**inputs)
         detection_results = processor.post_process_grounded_object_detection(
-            outputs=outputs, target_sizes=target_sizes, threshold=conf_threshold, text_labels=text_labels
+            outputs=outputs, 
+            target_sizes=image_size_list, 
+            threshold=conf_threshold, 
+            text_labels=text_labels
         )
         detection_results_cpu = _to_cpu(detection_results)
         t2 = time.perf_counter()
-
+        
         all_detection_results.extend(detection_results_cpu)
         all_uuids.extend(uuids)
         n_imgs_processed += len(uuids)
-
         del inputs, outputs, detection_results
-        torch.cuda.synchronize()
-        torch.cuda.empty_cache()
+        # torch.cuda.synchronize()
+        # torch.cuda.empty_cache()
         
-         # Save results when reaching max_uuids_per_file
+        # Save results when reaching max_uuids_per_file
         if len(all_uuids) >= max_uuids_per_file:
             out_file = os.path.join(
                 detections_output_dir, 
@@ -327,14 +372,15 @@ def main(
             file_idx += 1
             all_detection_results = []
             all_uuids = []
-        
+
         batch_stats.update({
-            "preprocessing_s": t1 - t0,
+            "data_transfer_s": t1 - t0,
             "inference_s": t2 - t1,
             "total_batch_s": t2 - t0
         })
         all_batch_stats.append(batch_stats)
-        
+                        
+
     # Save remaining results
     if len(all_uuids) > 0:
         out_file = os.path.join(
