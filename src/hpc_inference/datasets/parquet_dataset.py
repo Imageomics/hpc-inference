@@ -48,7 +48,8 @@ class ParquetImageDataset(IterableDataset):
         read_batch_size: int = 128,
         read_columns: Optional[List[str]] = None,
         stagger: bool = False,
-        processed_files_log: Optional[Union[str, Path]] = None
+        processed_files_log: Optional[Union[str, Path]] = None,
+        return_image_size: bool = False
     ) -> None:
         """
         Args:
@@ -68,6 +69,8 @@ class ParquetImageDataset(IterableDataset):
                 Typically includes ["uuid", "image", "original_size", "resized_size"].
             stagger: Whether to stagger the start of each worker. Defaults to False.
             processed_files_log: Path to log file for tracking processed files. Optional.
+            return_image_size: If True, returns (uuid, processed_data, image_size) instead of (uuid, processed_data).
+                Image size is returned as (height, width) tuple.
         """
         def safe_decode_fn(row):
             try:
@@ -86,6 +89,7 @@ class ParquetImageDataset(IterableDataset):
         self.read_columns: Optional[List[str]] = read_columns
         self.stagger: bool = stagger
         self.processed_files_log: Optional[str] = str(processed_files_log) if processed_files_log else None
+        self.return_image_size: bool = return_image_size
 
         # Apply rank-based file partitioning
         if self.world_size > 1:
@@ -118,7 +122,7 @@ class ParquetImageDataset(IterableDataset):
             batch_df: DataFrame containing batch data from Parquet file.
             
         Yields:
-            Tuples of (uuid, processed_data) for each row in the batch.
+            Tuples of (uuid, processed_data) or (uuid, processed_data, image_size) for each row in the batch.
         """
         for _, row in batch_df.iterrows():
             try:
@@ -134,6 +138,10 @@ class ParquetImageDataset(IterableDataset):
                 if img is None:
                     logging.warning(f"No image data found for UUID {uuid}")
                     continue
+                
+                # Get image size (height, width) if requested
+                if self.return_image_size:
+                    image_size = img.size[::-1]  # Convert (width, height) to (height, width)
                     
                 if self.preprocess is None:
                     processed_data = img
@@ -149,7 +157,10 @@ class ParquetImageDataset(IterableDataset):
                     # Single callable preprocessing
                     processed_data = self.preprocess(img)
                 
-                yield uuid, processed_data
+                if self.return_image_size:
+                    yield uuid, processed_data, image_size
+                else:
+                    yield uuid, processed_data
                 
             except Exception as e:
                 logging.error(f"[Rank {self.rank}] Error processing row with UUID {row.get(self.col_uuid, 'unknown')}: {e}")
