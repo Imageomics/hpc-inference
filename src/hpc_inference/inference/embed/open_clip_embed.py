@@ -10,6 +10,7 @@ from typing import Dict, Optional, Union, Any
 
 from ...datasets.parquet_dataset import ParquetImageDataset
 from ...datasets.image_folder_dataset import ImageFolderDataset
+from ...datasets.hdf5_dataset import HDF5ImageDataset
 from ...utils.common import format_time, decode_image, save_emb_to_parquet, load_config
 from ...utils.distributed import multi_model_collate
 from ...utils import profiling
@@ -59,8 +60,8 @@ def main(
     check_openclip_dependencies()
 
     # Validate input type
-    if input_type not in ["images", "parquet"]:
-        raise ValueError(f"Invalid input_type: {input_type}. Must be 'images' or 'parquet'")
+    if input_type not in ["images", "parquet", "hdf5"]:
+        raise ValueError(f"Invalid input_type: {input_type}. Must be 'images', 'parquet', or 'hdf5'")
 
     # =============== #
     # ---- Setup ----
@@ -149,6 +150,43 @@ def main(
             processed_files_log=processed_files_log
         )
 
+    elif input_type == "hdf5":
+        logging.info(f"Processing HDF5 files from: {target_dir}")
+        
+        # Find all HDF5 files in the target directory
+        target_path = Path(target_dir)
+        hdf5_files = []
+        
+        if file_list is None:
+            hdf5_files = [str(p) for p in target_path.rglob('*.h5')] + [str(p) for p in target_path.rglob('*.hdf5')]
+            logging.info(f"Found {len(hdf5_files)} HDF5 files in {target_dir}")
+        else:
+            file_list_path = Path(file_list)
+            if file_list_path.exists():
+                with open(file_list_path, "r") as f:
+                    hdf5_files = [line.strip() for line in f if line.strip().endswith(('.h5', '.hdf5'))]
+                logging.info(f"Loaded {len(hdf5_files)} HDF5 files from {file_list}")
+            else:
+                raise FileNotFoundError(f"File list not found: {file_list}")
+        
+        if not hdf5_files:
+            raise ValueError(f"No HDF5 files found in {target_dir}")
+        
+        processed_files_log = os.path.join(
+            embeddings_output_dir, f"processed_files_rank{global_rank}_{datetime.now().strftime('%Y%m%d%H%M%S')}.log"
+        )
+        dataset = HDF5ImageDataset(
+            hdf5_files,
+            group_name=config.get("group_name", "images"),
+            rank=global_rank,
+            world_size=world_size,
+            evenly_distribute=config.get("evenly_distribute", True),
+            preprocess=preprocessors,
+            color_mode=config.get("color_mode", "RGB"),
+            validate=config.get("validate_images", False),
+            stagger=config.get("stagger", False),
+            processed_files_log=processed_files_log
+        )
         
     collate_fn = multi_model_collate if len(models) > 1 else None
     loader = DataLoader(
@@ -285,8 +323,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="CLIP Batch Embedding with Config File or Command Line Arguments")
     parser.add_argument("target_dir", type=str, help="Directory containing input data")
     parser.add_argument("output_dir", type=str, help="Directory to save output embeddings")
-    parser.add_argument("--input_type", type=str, required=True, choices=["images", "parquet"],
-                        help="Type of input data: 'images' for image directory, 'parquet' for Parquet files")
+    parser.add_argument("--input_type", type=str, required=True, choices=["images", "parquet", "hdf5"],
+                        help="Type of input data: 'images' for image directory, 'parquet' for Parquet files, 'hdf5' for HDF5 files")
     parser.add_argument("--config", type=str, default=None, help="Path to YAML config file (optional)")
     parser.add_argument("--file_list", type=str, default=None,
                         help="File containing list of Parquet files to process (only for --input_type parquet)")
@@ -307,6 +345,13 @@ if __name__ == "__main__":
     parser.add_argument("--read_columns", type=str, nargs="+", 
                         default=["uuid", "original_size", "resized_size", "image"],
                         help="Columns to read from Parquet files (only for --input_type parquet)")
+    
+    # HDF5 specific arguments
+    parser.add_argument("--group_name", type=str, default="images",
+                        help="HDF5 group name containing images (only for --input_type hdf5)")
+    parser.add_argument("--color_mode", type=str, default="RGB", choices=["RGB", "L", "RGBA"],
+                        help="Color mode for image conversion (only for --input_type hdf5)")
+    
     parser.add_argument("--evenly_distribute", action="store_true", default=True,
                         help="Distribute files evenly based on size (recommended for better load balancing)")
     parser.add_argument("--stagger", action="store_true", 
@@ -323,11 +368,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Validate argument combinations
-    if args.input_type == "parquet" and args.file_list and not os.path.exists(args.file_list):
+    if args.input_type in ["parquet", "hdf5"] and args.file_list and not os.path.exists(args.file_list):
         parser.error(f"File list does not exist: {args.file_list}")
     
     if args.input_type == "images" and args.file_list:
-        parser.error("--file_list is only applicable when --input_type is 'parquet'")
+        parser.error("--file_list is only applicable when --input_type is 'parquet' or 'hdf5'")
 
     # Load config or create from arguments
     if args.config:
@@ -352,7 +397,10 @@ if __name__ == "__main__":
             "validate_images": args.validate_images,
             "uuid_mode": args.uuid_mode,
             "evenly_distribute": args.evenly_distribute,
-            "stagger": args.stagger
+            "stagger": args.stagger,
+            # HDF5 specific
+            "group_name": args.group_name,
+            "color_mode": args.color_mode
         }
         print("Using command line arguments (no config file provided)")
 

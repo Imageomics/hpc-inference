@@ -1,0 +1,94 @@
+# =============================================================================
+# Configuration File for Batch Image Embedding from HDF5 Files
+# =============================================================================
+# This configuration is optimized for processing HDF5 files containing
+# encoded image data (e.g., cropped images from detection pipelines).
+# -----------------------------------------------------------------------------
+
+# ---------------------------
+# Model Configurations
+# ---------------------------
+# List one or more models to use for embedding.
+# For OpenCLIP models, see: https://github.com/mlfoundations/open_clip#pretrained-models
+models:
+  bioclip:
+    name: hf-hub:imageomics/bioclip
+    pretrained: null
+  # Uncomment to add more models for multi-model processing
+  # vit_b_32:
+  #   name: ViT-B-32
+  #   pretrained: openai
+  # vit_l_14:
+  #   name: ViT-L-14
+  #   pretrained: laion2b_s32b_b82k
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 32          # Number of images per batch (adjust based on GPU memory)
+num_workers: 28         # Number of worker processes for data loading
+prefetch_factor: 32     # Number of batches prefetched by each worker
+
+# ---------------------------
+# HDF5-Specific Settings
+# ---------------------------
+group_name: images      # Name of the HDF5 group containing image datasets
+                        # Default: "images"
+
+color_mode: RGB         # Color mode for PIL image conversion
+                        # Options: "RGB", "L" (grayscale), "RGBA"
+
+validate_images: false  # Set to true to validate images when loading
+                        # Slower but catches corrupted data
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true  # Distribute files based on size for load balancing
+stagger: false           # Stagger worker start times to reduce I/O congestion
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_rows_per_file: 50000    # Maximum number of embeddings per output file
+out_prefix: hdf5_embeds     # Prefix for output files
+
+# =============================================================================
+# HDF5 DATA REQUIREMENTS:
+# =============================================================================
+# Your HDF5 files must follow this structure:
+#
+# file.h5
+# └── images/                    # Group containing image datasets
+#     ├── uuid_001               # Dataset: encoded image bytes
+#     ├── uuid_002               # Dataset: encoded image bytes
+#     └── ...
+#
+# Each dataset contains raw image bytes (JPEG/PNG/WebP encoded).
+# The dataset name serves as the UUID for each image.
+#
+# Example of creating compatible HDF5 data:
+# ```python
+# import h5py
+# import io
+# import numpy as np
+# from PIL import Image
+#
+# with h5py.File('images.h5', 'w') as h5f:
+#     images_group = h5f.create_group('images')
+#
+#     # Encode and store image
+#     img = Image.open('image.jpg')
+#     img_bytes = io.BytesIO()
+#     img.save(img_bytes, format='JPEG')
+#
+#     # Create dataset with UUID as name
+#     images_group.create_dataset(
+#         'image_uuid_001',
+#         data=np.frombuffer(img_bytes.getvalue(), dtype=np.uint8)
+#     )
+# ```
+#
+# To convert WebDataset shards to HDF5 format, use the conversion utility:
+#   python -m hpc_inference.utils.wds_to_hdf5 --wds-dir /path/to/shards --output-dir /path/to/output
+# =============================================================================
