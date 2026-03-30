@@ -88,7 +88,4 @@ out_prefix: hdf5_embeds     # Prefix for output files
 #         data=np.frombuffer(img_bytes.getvalue(), dtype=np.uint8)
 #     )
 # ```
-#
-# To convert WebDataset shards to HDF5 format, use the conversion utility:
-#   python -m hpc_inference.utils.wds_to_hdf5 --wds-dir /path/to/shards --output-dir /path/to/output
 # =============================================================================

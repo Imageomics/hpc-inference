@@ -72,7 +72,6 @@ srun python -m hpc_inference.inference.embed.open_clip_embed \
 # - Must follow structure: file.h5 -> group_name/ -> uuid datasets
 # - Each dataset contains encoded image bytes (JPEG, PNG, WebP, etc.)
 # - Dataset names are used as UUIDs for the output embeddings
-# - Compatible with output from wds_to_hdf5 conversion utility
 
 # -------------------------------
 # SLURM Template Field Explanations
