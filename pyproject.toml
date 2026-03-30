@@ -50,10 +50,6 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Dataset Conversion
-conversion = [
-    "webdataset>=0.2.0",
-]
 # OpenCLIP inference dependencies
 openclip = [
     "open-clip-torch>=2.20.0",
@@ -69,7 +65,7 @@ inference = [
 
 # All features
 all = [
-    "hpc-inference[inference,conversion]",
+    "hpc-inference[inference]",
 ]
 
 # Development dependencies
