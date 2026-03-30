@@ -18,7 +18,7 @@ source /path/to/your/venv/bin/activate         # [REQUIRED] Activate your Python
 
 # === Ensure package is installed ===
 # Make sure hpc-inference package with YOLO dependencies is installed
-# pip install 'hpc-inference[yolo]' or pip install ultralytics
+# pip install 'hpc-inference[detection]' or pip install ultralytics
 which python                                   # Print Python path for debugging
 
 # === Set data paths ===

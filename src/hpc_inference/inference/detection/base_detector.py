@@ -19,7 +19,7 @@ def check_yolo_dependencies() -> None:
     if not YOLO_AVAILABLE:
         raise ImportError(
             "Ultralytics YOLO is not installed. Install with: "
-            "pip install 'hpc-inference[yolo]' or pip install ultralytics"
+            "pip install 'hpc-inference[detection]' or pip install ultralytics"
         )
 
 
