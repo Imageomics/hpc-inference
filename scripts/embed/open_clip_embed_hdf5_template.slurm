@@ -64,7 +64,7 @@ srun python -m hpc_inference.inference.embed.open_clip_embed \
 #                          Format: one file path per line (must end with .h5 or .hdf5)
 #                          If not provided, all .h5/.hdf5 files in TARGET_DIR will be processed
 # --group_name:            Name of the HDF5 group containing image datasets
-#                          Default: "images" (matches HDF5Writer output)
+#                          Default: "images"
 # --color_mode:            Color mode for PIL image conversion (RGB, L, RGBA)
 #                          Default: "RGB"
 
@@ -72,7 +72,7 @@ srun python -m hpc_inference.inference.embed.open_clip_embed \
 # - Must follow structure: file.h5 -> group_name/ -> uuid datasets
 # - Each dataset contains encoded image bytes (JPEG, PNG, WebP, etc.)
 # - Dataset names are used as UUIDs for the output embeddings
-# - Compatible with output from HDF5Writer utility
+# - Compatible with output from wds_to_hdf5 conversion utility
 
 # -------------------------------
 # SLURM Template Field Explanations
