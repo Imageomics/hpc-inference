@@ -101,10 +101,10 @@ python -m hpc_inference.inference.embed.open_clip_embed \
     --input_type parquet --config config.yaml
 ```
 
-**Templates available:**
+### Templates
 
-- **Config templates** → `configs/` (e.g., `config_embed_parquet_template.yaml`, `config_embed_hdf5_template.yaml`)
-- **SLURM job templates** → `scripts/embed/` (e.g., `open_clip_embed_parquet_template.slurm`)
+- **Config templates** → [`configs/`](https://github.com/Imageomics/hpc-inference/tree/main/configs) (e.g., `config_embed_parquet_template.yaml`, `config_embed_hdf5_template.yaml`)
+- **SLURM job templates** → [`scripts/`](https://github.com/Imageomics/hpc-inference/tree/main/scripts) (e.g., `open_clip_embed_parquet_template.slurm`)
 
 #### SLURM Integration
 
