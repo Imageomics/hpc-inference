@@ -27,14 +27,14 @@ OUTPUT_DIR="/path/to/your/output_dir"          # [REQUIRED] Directory to save ou
 # === Choose your configuration method ===
 # Option 1: Use config file (RECOMMENDED for production)
 CONFIG_FILE="/path/to/your/hdf5_config.yaml"   # Path to YAML config file
-FILE_LIST="/path/to/your/file_list.txt"        # [OPTIONAL] File with list of HDF5 files
+# FILE_LIST="/path/to/your/file_list.txt"      # [OPTIONAL] File with list of HDF5 files
 
 srun python -m hpc_inference.inference.embed.open_clip_embed \
     "${TARGET_DIR}" \
     "${OUTPUT_DIR}" \
     --input_type hdf5 \
-    --config "${CONFIG_FILE}" \
-    --file_list "${FILE_LIST}"  # [OPTIONAL] Use this if you have a specific list of files to process
+    --config "${CONFIG_FILE}"
+    # --file_list "${FILE_LIST}"  # [OPTIONAL] Uncomment to process a specific list of files
 
 # Option 2: Use command line arguments (for quick testing)
 # Uncomment and modify the lines below, comment out the config version above

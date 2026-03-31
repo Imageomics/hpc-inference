@@ -327,7 +327,7 @@ if __name__ == "__main__":
                         help="Type of input data: 'images' for image directory, 'parquet' for Parquet files, 'hdf5' for HDF5 files")
     parser.add_argument("--config", type=str, default=None, help="Path to YAML config file (optional)")
     parser.add_argument("--file_list", type=str, default=None,
-                        help="File containing list of Parquet files to process (only for --input_type parquet)")
+                        help="File containing list of input files to process (for --input_type parquet or hdf5)")
     
     # Model configuration arguments (used when no config file provided)
     parser.add_argument("--model_name", type=str, default="ViT-B-32", 

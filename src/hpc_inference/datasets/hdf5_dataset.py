@@ -168,17 +168,17 @@ class HDF5ImageDataset(IterableDataset):
         try:
             # Decode from bytes
             img = Image.open(io.BytesIO(image_bytes))
-            
-            # Convert to desired color mode
-            if img.mode != self.color_mode:
-                img = img.convert(self.color_mode)
-            
-            # Validate if requested
+
+            # Validate before processing to catch corrupted data early
             if self.validate:
                 img.verify()
                 # Re-open after verify (verify closes the file)
-                img = Image.open(io.BytesIO(image_bytes)).convert(self.color_mode)
-            
+                img = Image.open(io.BytesIO(image_bytes))
+
+            # Convert to desired color mode
+            if img.mode != self.color_mode:
+                img = img.convert(self.color_mode)
+
             return img
         except Exception as e:
             logging.error(f"Error decoding image: {e}")
