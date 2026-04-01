@@ -6,21 +6,18 @@ from torch.utils.data import DataLoader
 import os
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Optional, Union, Any
+from typing import Dict, Optional, Union, Any, List
+import pyarrow as pa
+import pyarrow.parquet as pq
+import json
 
 from ...datasets.parquet_dataset import ParquetImageDataset
 from ...datasets.image_folder_dataset import ImageFolderDataset
 from ...datasets.hdf5_dataset import HDF5ImageDataset
 from ...utils.common import format_time, decode_image, save_emb_to_parquet, load_config
-from ...utils.distributed import multi_model_collate
+from ...utils.transforms import MegaDetector_v5_Transform
 from ...utils import profiling
-
-try:
-    import open_clip
-    OPENCLIP_AVAILABLE = True
-except ImportError:
-    OPENCLIP_AVAILABLE = False
-    open_clip = None
+from .animal_detector import AnimalDetector
 
 import logging
 # Configure logging
@@ -30,13 +27,39 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-def check_openclip_dependencies() -> None:
-    """Check if OpenCLIP dependencies are available."""
-    if not OPENCLIP_AVAILABLE:
-        raise ImportError(
-            "OpenCLIP is not installed. Install with: "
-            "pip install 'hpc-inference[openclip]'"
-        )
+def save_detection_results(uuids: List[str], detection_results: List[Dict[str, Any]], output_file: str) -> None:
+    """Save animal detection results to parquet file using PyArrow for better performance."""
+    
+    # Extract data for parquet storage
+    max_scores = []
+    num_detections = []
+    detections_json = []
+    
+    for result in detection_results:
+        max_scores.append(result["max_detection_score"])
+        num_detections.append(result["num_detections"])
+        # Store detections as JSON string for complex data
+        detections_json.append(json.dumps(result["detections"]))
+    
+    # Create PyArrow table
+    table = pa.table({
+        'uuid': pa.array(uuids, type=pa.string()),
+        'max_detection_score': pa.array(max_scores, type=pa.float32()),
+        'num_detections': pa.array(num_detections, type=pa.int32()),
+        'detections': pa.array(detections_json, type=pa.string())
+    })
+    
+    # Write to parquet with optimized settings
+    pq.write_table(
+        table, 
+        output_file,
+        compression='snappy',
+        use_dictionary=True,
+        write_statistics=True
+    )
+    
+    total_detections = sum(num_detections)
+    logging.info(f"Saved {len(uuids)} images with {total_detections} total detections to {output_file}")
 
 @torch.no_grad()
 def main(
@@ -47,18 +70,15 @@ def main(
     file_list: Optional[Union[str, Path]] = None
 ) -> None:
     """
-    Main function for CLIP embedding generation.
+    Main function for YOLO animal detection using MegaDetector.
     
     Args:
         config: Configuration dictionary containing model and processing parameters.
-        target_dir: Directory containing input data (Parquet files or images).
-        output_dir: Directory to save output embeddings and profiles.
-        input_type: Type of input data ("images" or "parquet").
-        file_list: Optional file containing list of Parquet files to process.
+        target_dir: Directory containing input data (Parquet files, HDF5 files, or images).
+        output_dir: Directory to save output detection results and profiles.
+        input_type: Type of input data ("images", "parquet", or "hdf5").
+        file_list: Optional file containing list of Parquet or HDF5 files to process.
     """
-    # Check required dependencies
-    check_openclip_dependencies()
-
     # Validate input type
     if input_type not in ["images", "parquet", "hdf5"]:
         raise ValueError(f"Invalid input_type: {input_type}. Must be 'images', 'parquet', or 'hdf5'")
@@ -74,26 +94,23 @@ def main(
     logging.info(f"Global rank: {global_rank}, Local rank: {local_rank}, World size: {world_size}")
     
     base_output_dir = os.path.abspath(str(output_dir))
-    embeddings_output_dir = os.path.abspath(os.path.join(base_output_dir, "embeddings", f"rank_{global_rank}"))
-    os.makedirs(embeddings_output_dir, exist_ok=True)
+    detections_output_dir = os.path.abspath(os.path.join(base_output_dir, "detections", f"rank_{global_rank}"))
+    os.makedirs(detections_output_dir, exist_ok=True)
     profile_dir = os.path.abspath(os.path.join(base_output_dir, "profile_results", f"rank_{global_rank}"))
     os.makedirs(profile_dir, exist_ok=True)
     
     device = f"cuda:{local_rank}" if torch.cuda.is_available() else "cpu"
 
-    # Load models from config
-    models = {}
-    preprocessors = {}
-    for key, spec in config["models"].items():
-        model, _, preprocess = open_clip.create_model_and_transforms(
-            spec["name"],
-            pretrained=spec.get("pretrained"),
-            device=device
-        )
-        model = torch.compile(model.to(device))
-        model.eval()
-        models[key] = model
-        preprocessors[key] = preprocess
+    # Initialize and load animal detector
+    animal_detector = AnimalDetector(config, device)
+    animal_detector.load_model()
+    
+    # Create MegaDetector-specific preprocessing transforms
+    # Uses transforms from utils.transforms module (adapted from Microsoft CameraTraps)
+    image_size = config.get("image_size", 1280)  # MegaDetector standard input size
+    preprocess = MegaDetector_v5_Transform(target_size=image_size)
+    
+    logging.info(f"Using MegaDetector v5 transforms with image size: {image_size}x{image_size}")
 
     # Create dataset based on input type
     if input_type == "images":
@@ -101,7 +118,7 @@ def main(
         
         dataset = ImageFolderDataset(
             target_dir, 
-            preprocess=preprocessors,
+            preprocess=preprocess,
             validate=config.get("validate_images", False),
             rank=global_rank,
             world_size=world_size,
@@ -109,7 +126,6 @@ def main(
             stagger=config.get("stagger", False),
             uuid_mode=config.get("uuid_mode", "filename")
         )
-        
         
     elif input_type == "parquet":
         logging.info(f"Processing Parquet files from: {target_dir}")
@@ -134,7 +150,7 @@ def main(
             raise ValueError(f"No Parquet files found in {target_dir}")
         
         processed_files_log = os.path.join(
-            embeddings_output_dir, f"processed_files_rank{global_rank}_{datetime.now().strftime('%Y%m%d%H%M%S')}.log"
+            detections_output_dir, f"processed_files_rank{global_rank}_{datetime.now().strftime('%Y%m%d%H%M%S')}.log"
         )
         dataset = ParquetImageDataset(
             parquet_files,
@@ -143,63 +159,53 @@ def main(
             world_size=world_size,  
             evenly_distribute=config.get("evenly_distribute", True),
             decode_fn=decode_image,
-            preprocess=preprocessors,
+            preprocess=preprocess,  
             read_batch_size=config.get("read_batch_size", 128),
             read_columns=config.get("read_columns", ["uuid", "original_size", "resized_size", "image"]),
             stagger=config.get("stagger", False),
             processed_files_log=processed_files_log
         )
-
     elif input_type == "hdf5":
         logging.info(f"Processing HDF5 files from: {target_dir}")
         
         # Find all HDF5 files in the target directory
         target_path = Path(target_dir)
-        hdf5_files = []
+        h5_files = []
         
         if file_list is None:
-            hdf5_files = [str(p) for p in target_path.rglob('*.h5')] + [str(p) for p in target_path.rglob('*.hdf5')]
-            logging.info(f"Found {len(hdf5_files)} HDF5 files in {target_dir}")
+            h5_files = [str(p) for p in target_path.rglob('*.h5')]
+            logging.info(f"Found {len(h5_files)} HDF5 files in {target_dir}")
         else:
             file_list_path = Path(file_list)
             if file_list_path.exists():
                 with open(file_list_path, "r") as f:
-                    hdf5_files = [line.strip() for line in f if line.strip().endswith(('.h5', '.hdf5'))]
-                logging.info(f"Loaded {len(hdf5_files)} HDF5 files from {file_list}")
+                    h5_files = [line.strip() for line in f if line.strip().endswith('.h5')]
+                logging.info(f"Loaded {len(h5_files)} HDF5 files from {file_list}")
             else:
                 raise FileNotFoundError(f"File list not found: {file_list}")
         
-        if not hdf5_files:
+        if not h5_files:
             raise ValueError(f"No HDF5 files found in {target_dir}")
         
-        processed_files_log = os.path.join(
-            embeddings_output_dir, f"processed_files_rank{global_rank}_{datetime.now().strftime('%Y%m%d%H%M%S')}.log"
-        )
         dataset = HDF5ImageDataset(
-            hdf5_files,
-            group_name=config.get("group_name", "images"),
+            h5_files,
             rank=global_rank,
             world_size=world_size,
             evenly_distribute=config.get("evenly_distribute", True),
-            preprocess=preprocessors,
-            color_mode=config.get("color_mode", "RGB"),
-            validate=config.get("validate_images", False),
-            stagger=config.get("stagger", False),
-            processed_files_log=processed_files_log
+            preprocess=preprocess,
+            stagger=config.get("stagger", False)
         )
-        
-    collate_fn = multi_model_collate if len(models) > 1 else None
+
     loader = DataLoader(
         dataset,
         batch_size=config.get("batch_size", 16),
         shuffle=False,
         num_workers=config.get("num_workers", 28),
         pin_memory=True,
-        prefetch_factor=config.get("prefetch_factor", 16),
-        collate_fn=collate_fn
+        prefetch_factor=config.get("prefetch_factor", 16)
     )
 
-    all_embeds = {key: [] for key in models}
+    all_detection_results = []
     all_uuids = []
     all_batch_stats = []
     usage_log = []
@@ -214,87 +220,70 @@ def main(
     usage_thread.start()
     
     max_rows_per_file = config.get("max_rows_per_file", 10000)
-    out_prefix = config.get("out_prefix", "embed_results")
+    out_prefix = config.get("out_prefix", "animal_detection_results")
+    conf_threshold = config.get("confidence_threshold", 0.2)
 
-    # Main batch loop: handle single and multi-model cases
-    model_keys = list(models.keys())
-    single_model = len(models) == 1
-    model_key = model_keys[0] if single_model else None
-
-    for batch_idx, (uuids, data) in enumerate(loader):
+    # Main batch loop
+    for batch_idx, (uuids, images) in enumerate(loader):
         batch_stats = {"batch": batch_idx, "batch_size": len(uuids)}
 
         t0 = time.perf_counter()
-        if single_model:
-            images = data.to(device, non_blocking=True)
-            t1 = time.perf_counter()
-            embeds = models[model_key].encode_image(images)
-            t2 = time.perf_counter()
-            all_embeds[model_key].append(embeds.cpu().numpy())
-            t3 = time.perf_counter()
-            del images, embeds  # Free memory
-        else:
-            batch_dict = {k: v.to(device, non_blocking=True) for k, v in data.items()}
-            t1 = time.perf_counter()
-            embeds = {}
-            for key, model in models.items():
-                embeds[key] = model.encode_image(batch_dict[key])
-            t2 = time.perf_counter()
-            for key in models:
-                all_embeds[key].append(embeds[key].cpu().numpy())
-            t3 = time.perf_counter()
-            del batch_dict, embeds  # Free memory
-
-        torch.cuda.empty_cache()  # Clear GPU memory
+        images = images.to(device)
+        t1 = time.perf_counter()
+        
+        # Run animal detection using AnimalDetector
+        detection_results = animal_detector.detect(images, conf_threshold)
+        t2 = time.perf_counter()
+        
+        all_detection_results.extend(detection_results)
         all_uuids.extend(uuids)
         n_imgs_processed += len(uuids)
+
+        # Count total detections in this batch for logging
+        batch_detections = sum(result["num_detections"] for result in detection_results)
+        # logging.info(f"Batch {batch_idx}: {len(uuids)} images, {batch_detections} detections")
         
+        # Save results when reaching max_rows_per_file
         if len(all_uuids) >= max_rows_per_file:
             out_file = os.path.join(
-                embeddings_output_dir, 
+                detections_output_dir, 
                 f"{out_prefix}_rank_{global_rank}_{file_idx}.parquet"
             )
-            save_emb_to_parquet(
-                all_uuids,
-                {f"emb_{key}": np.vstack(all_embeds[key]) for key in models},
-                out_file
-            )
-            #logging.info(f"Saved {len(all_uuids)} embeddings to {out_file}")
+            save_detection_results(all_uuids, all_detection_results, out_file)
             file_idx += 1
-            all_embeds = {key: [] for key in models}
+            all_detection_results = []
             all_uuids = []
             
         batch_stats.update({
-            "cpu_to_gpu_s": t1 - t0,
-            "gpu_inference_s": t2 - t1,
-            "gpu_to_cpu_s": t3 - t2,
-            "total_batch_s": t3 - t0,
+            "preprocessing_s": t1 - t0,
+            "inference_s": t2 - t1,
+            "total_batch_s": t2 - t0,
+            "detections_found": batch_detections
         })
         all_batch_stats.append(batch_stats)
     
-    # Save remaining embeddings
+    # Save remaining results
     if len(all_uuids) > 0:
         out_file = os.path.join(
-            embeddings_output_dir, 
+            detections_output_dir, 
             f"{out_prefix}_rank_{global_rank}_{file_idx}.parquet"
         )
-        save_emb_to_parquet(
-            all_uuids,
-            {f"emb_{key}": np.vstack(all_embeds[key]) for key in models},
-            out_file
-        )
-        #logging.info(f"Saved {len(all_uuids)} embeddings to {out_file}")
+        save_detection_results(all_uuids, all_detection_results, out_file)
 
     # Stop profiling and save results
     usage_stop.set()
     usage_thread.join()
 
     elapsed = time.time() - start_time
-    logging.info(f"Total images embedded: {n_imgs_processed}")
+    total_detections = sum(stats.get("detections_found", 0) for stats in all_batch_stats)
+    
+    logging.info(f"Total images processed: {n_imgs_processed}")
+    logging.info(f"Total detections found: {total_detections}")
     logging.info(f"Total time taken: {format_time(elapsed)}")
     if n_imgs_processed > 0:
         logging.info(f"Avg time/image: {elapsed/n_imgs_processed:.4f} sec")
         logging.info(f"Throughput: {n_imgs_processed/elapsed:.2f} images/sec")
+        logging.info(f"Avg detections/image: {total_detections/n_imgs_processed:.2f}")
     
     profiling.log_computing_specs(
         profile_dir, 
@@ -303,10 +292,13 @@ def main(
             "prefetch_factor": config.get("prefetch_factor", 16),
             "read_batch_size": config.get("read_batch_size", 128),
             "max_rows_per_file": config.get("max_rows_per_file", 10000),
-            "task": "Image embedding",
-            "model": [spec["name"] for spec in config["models"].values()],
+            "task": "Animal detection",
+            "model": config["model"]["weights"],
+            "confidence_threshold": conf_threshold,
             "throughput": f"{n_imgs_processed/elapsed:.2f} images/sec" if n_imgs_processed > 0 else "0 images/sec",
             "total_images": n_imgs_processed,
+            "total_detections": total_detections,
+            "avg_detections_per_image": f"{total_detections/n_imgs_processed:.2f}" if n_imgs_processed > 0 else "0",
             "total_time_s": elapsed,
             "input_type": input_type
         }
@@ -320,38 +312,33 @@ def main(
     
 if __name__ == "__main__":
     import argparse
-    parser = argparse.ArgumentParser(description="CLIP Batch Embedding with Config File or Command Line Arguments")
+    parser = argparse.ArgumentParser(description="YOLO Animal Detection (MegaDetector) with Config File or Command Line Arguments")
     parser.add_argument("target_dir", type=str, help="Directory containing input data")
-    parser.add_argument("output_dir", type=str, help="Directory to save output embeddings")
+    parser.add_argument("output_dir", type=str, help="Directory to save output detection results")
     parser.add_argument("--input_type", type=str, required=True, choices=["images", "parquet", "hdf5"],
                         help="Type of input data: 'images' for image directory, 'parquet' for Parquet files, 'hdf5' for HDF5 files")
     parser.add_argument("--config", type=str, default=None, help="Path to YAML config file (optional)")
     parser.add_argument("--file_list", type=str, default=None,
-                        help="File containing list of input files to process (for --input_type parquet or hdf5)")
+                        help="File containing list of Parquet or HDF5 files to process (only for --input_type parquet or hdf5)")
     
     # Model configuration arguments (used when no config file provided)
-    parser.add_argument("--model_name", type=str, default="ViT-B-32", 
-                        help="OpenCLIP model name (default: ViT-B-32)")
-    parser.add_argument("--pretrained", type=str, default="openai",
-                        help="Pretrained weights (default: openai)")
+    parser.add_argument("--model_weights", type=str, default="md_v5a.0.0.pt", 
+                        help="YOLO model weights file (default: md_v5a.0.0.pt - MegaDetector v5a)")
+    parser.add_argument("--confidence_threshold", type=float, default=0.2,
+                        help="Confidence threshold for animal detection (default: 0.2)")
+    parser.add_argument("--image_size", type=int, default=1280,
+                        help="Input image size for MegaDetector (default: 1280)")
     
     # Compute arguments
     parser.add_argument("--batch_size", type=int, default=16, help="Batch size for inference")
-    parser.add_argument("--num_workers", type=int, default=28, help="Number of dataloader workers")
+    parser.add_argument("--num_workers", type=int, default=20, help="Number of dataloader workers")
     parser.add_argument("--prefetch_factor", type=int, default=16, help="Dataloader prefetch factor")
     parser.add_argument("--read_batch_size", type=int, default=128, help="Parquet read batch size")
     parser.add_argument("--max_rows_per_file", type=int, default=10000, help="Max rows per output file")
-    parser.add_argument("--out_prefix", type=str, default="embed_results", help="Output file prefix")
+    parser.add_argument("--out_prefix", type=str, default="animal_detection_results", help="Output file prefix")
     parser.add_argument("--read_columns", type=str, nargs="+", 
                         default=["uuid", "original_size", "resized_size", "image"],
                         help="Columns to read from Parquet files (only for --input_type parquet)")
-    
-    # HDF5 specific arguments
-    parser.add_argument("--group_name", type=str, default="images",
-                        help="HDF5 group name containing images (only for --input_type hdf5)")
-    parser.add_argument("--color_mode", type=str, default="RGB", choices=["RGB", "L", "RGBA"],
-                        help="Color mode for image conversion (only for --input_type hdf5)")
-    
     parser.add_argument("--evenly_distribute", action="store_true", default=True,
                         help="Distribute files evenly based on size (recommended for better load balancing)")
     parser.add_argument("--stagger", action="store_true", 
@@ -364,11 +351,10 @@ if __name__ == "__main__":
                         choices=["filename", "relative", "fullpath", "hash"],
                         help="How to generate UUIDs from image paths (only for --input_type images)")
     
-    
     args = parser.parse_args()
 
     # Validate argument combinations
-    if args.input_type in ["parquet", "hdf5"] and args.file_list and not os.path.exists(args.file_list):
+    if args.file_list and not os.path.exists(args.file_list):
         parser.error(f"File list does not exist: {args.file_list}")
     
     if args.input_type == "images" and args.file_list:
@@ -381,11 +367,8 @@ if __name__ == "__main__":
     else:
         # Create config from command line arguments
         config = {
-            "models": {
-                "default": {
-                    "name": args.model_name,
-                    "pretrained": args.pretrained
-                }
+            "model": {
+                "weights": args.model_weights
             },
             "batch_size": args.batch_size,
             "num_workers": args.num_workers,
@@ -398,9 +381,8 @@ if __name__ == "__main__":
             "uuid_mode": args.uuid_mode,
             "evenly_distribute": args.evenly_distribute,
             "stagger": args.stagger,
-            # HDF5 specific
-            "group_name": args.group_name,
-            "color_mode": args.color_mode
+            "confidence_threshold": args.confidence_threshold,
+            "image_size": args.image_size
         }
         print("Using command line arguments (no config file provided)")
 
