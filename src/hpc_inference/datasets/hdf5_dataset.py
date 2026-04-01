@@ -22,7 +22,7 @@ logging.basicConfig(
 
 class HDF5ImageDataset(IterableDataset):
     """
-    Loads images from HDF5 files created by HDF5Writer in a streaming fashion.
+    Loads images from HDF5 files in a streaming fashion.
     - HDF5 structure: file contains "images" group with datasets named by UUID
     - Each dataset contains encoded image bytes (JPEG/PNG/WebP format)
     - Supports distributed processing with rank-based file partitioning
