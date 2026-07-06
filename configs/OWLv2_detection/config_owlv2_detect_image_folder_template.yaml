@@ -1,0 +1,42 @@
+# =============================================================================
+# Configuration File for OWLv2 Zero-Shot Detection from Image Folders
+# =============================================================================
+
+# ---------------------------
+# Detection Parameters
+# ---------------------------
+text_labels:
+  - fish
+  - shark
+  - whale
+confidence_threshold: 0.1   # Minimum confidence score for detections
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 16
+num_workers: 20
+prefetch_factor: 16
+
+# ---------------------------
+# Image Processing Settings
+# ---------------------------
+validate_images: false      # Validate images with PIL (slower but catches corrupted files)
+uuid_mode: filename         # Options: filename, relative, fullpath, hash
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true
+stagger: false
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_uuids_per_file: 10000
+out_prefix: OWLv2_detection_results
+
+# =============================================================================
+# USAGE:
+# python OWLv2_detect.py /path/to/images /path/to/output --input_type images --config config_owlv2_detect_image_folder_template.yaml
+# =============================================================================

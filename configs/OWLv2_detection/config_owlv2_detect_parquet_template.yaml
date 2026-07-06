@@ -1,0 +1,49 @@
+# =============================================================================
+# Configuration File for OWLv2 Zero-Shot Detection from Parquet Files
+# =============================================================================
+
+# ---------------------------
+# Detection Parameters
+# ---------------------------
+text_labels:
+  - fish
+  - shark
+  - whale
+confidence_threshold: 0.1   # Minimum confidence score for detections
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 16
+num_workers: 20
+prefetch_factor: 16
+
+# ---------------------------
+# Parquet-Specific Settings
+# ---------------------------
+read_batch_size: 128
+read_columns:
+  - uuid
+  - image
+  - original_size
+  - resized_size
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true
+stagger: false
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_uuids_per_file: 10000
+out_prefix: OWLv2_detection_results
+
+# =============================================================================
+# USAGE:
+# python OWLv2_detect.py /path/to/parquet_dir /path/to/output --input_type parquet --config config_owlv2_detect_parquet_template.yaml
+#
+# With file list:
+# python OWLv2_detect.py /path/to/parquet_dir /path/to/output --input_type parquet --file_list files.txt --config config_owlv2_detect_parquet_template.yaml
+# =============================================================================

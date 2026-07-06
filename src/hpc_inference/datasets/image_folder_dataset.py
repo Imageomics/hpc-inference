@@ -92,7 +92,8 @@ class ImageFolderDataset(IterableDataset):
         world_size: Optional[int] = None, 
         evenly_distribute: bool = True, 
         stagger: bool = False, 
-        uuid_mode: Literal["filename", "relative", "fullpath", "hash"] = "filename"
+        uuid_mode: Literal["filename", "relative", "fullpath", "hash"] = "filename",
+        return_image_size: bool = False
     ) -> None:
         """
         Args:
@@ -113,6 +114,8 @@ class ImageFolderDataset(IterableDataset):
                 - "relative": Use relative path from image_dir (subfolder/image001.jpg)  
                 - "fullpath": Use full absolute path
                 - "hash": Use hash of the full path
+            return_image_size: If True, returns (uuid, processed_data, image_size) instead of (uuid, processed_data).
+                Image size is returned as (height, width) tuple.
         """
         self.image_dir: str = str(image_dir)
         self.preprocess: Optional[Union[Callable, Dict[str, Callable]]] = preprocess
@@ -120,6 +123,7 @@ class ImageFolderDataset(IterableDataset):
         self.rank: int = rank or 0
         self.world_size: int = world_size or 1
         self.stagger: bool = stagger
+        self.return_image_size: bool = return_image_size
         
         # Initialize UUID generation function based on mode
         self._init_uuid_generator(uuid_mode)
@@ -157,6 +161,10 @@ class ImageFolderDataset(IterableDataset):
             # Load image
             img = Image.open(img_path).convert(self.color_mode)
             
+            # Get image size (height, width) if requested
+            if self.return_image_size:
+                image_size = img.size[::-1]  # Convert (width, height) to (height, width)
+            
             # Apply preprocessing
             if self.preprocess is None:
                 processed_img = img
@@ -175,7 +183,10 @@ class ImageFolderDataset(IterableDataset):
             # Generate UUID 
             uuid = self.generate_uuid(img_path)
             
-            return uuid, processed_img
+            if self.return_image_size:
+                return uuid, processed_img, image_size
+            else:
+                return uuid, processed_img
             
         except Exception as e:
             logging.error(f"[Rank {self.rank}] Error loading/processing image {img_path}: {e}")
