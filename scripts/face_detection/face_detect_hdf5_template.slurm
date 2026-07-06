@@ -1,0 +1,144 @@
+#!/bin/bash
+#SBATCH --job-name=face_detect_hdf5_job       # [REQUIRED] Set a descriptive job name
+#SBATCH --nodes=NUM_NODES                     # [REQUIRED] Number of nodes to use
+#SBATCH --ntasks-per-node=TASKS_PER_NODE      # [RECOMMENDED] Number of tasks per node
+#SBATCH --gpus-per-task=1                     # [REQUIRED] Number of GPUs per task (set to 1)
+#SBATCH --cpus-per-task=CPUS_PER_TASK         # [RECOMMENDED] Number of CPU cores per task (e.g., 48)
+#SBATCH --partition=PARTITION_NAME            # [REQUIRED] Partition/queue name (e.g., gpu, gpu-exp)
+#SBATCH --time=HH:MM:SS                       # [REQUIRED] Walltime limit (e.g., 6:00:00)
+#SBATCH --output=logs/face_detect_hdf5_%j.out  # [OPTIONAL] Stdout log file (%j = job ID)
+#SBATCH --error=logs/face_detect_hdf5_%j.err   # [OPTIONAL] Stderr log file
+#SBATCH --account=ACCOUNT_NAME                # [REQUIRED] Project account for allocation
+#SBATCH --mail-type=ALL                       # [OPTIONAL] Email notifications (BEGIN, END, FAIL, ALL)
+#SBATCH --mail-user=YOUR_EMAIL@domain.edu     # [OPTIONAL] Email address for notifications
+
+# === Load modules and activate environment ===
+module load cuda/VERSION                      # [REQUIRED] Load CUDA module (e.g., cuda/12.4.1)
+source /path/to/your/venv/bin/activate        # [REQUIRED] Activate your Python virtual environment
+
+# === Ensure package is installed ===
+# Make sure hpc-inference package with YOLO dependencies is installed
+# pip install 'hpc-inference[detection]' or pip install ultralytics
+which python                                  # Print Python path for debugging
+
+# === Set data paths ===
+TARGET_DIR="/path/to/your/hdf5_files"         # [REQUIRED] Directory containing input HDF5 files
+OUTPUT_DIR="/path/to/your/output_dir"         # [REQUIRED] Directory to save face detection results
+
+# === Choose your configuration method ===
+# Option 1: Use config file (RECOMMENDED for production)
+CONFIG_FILE="/path/to/your/face_detect_hdf5_config.yaml"  # Path to YAML config file
+FILE_LIST="/path/to/your/file_list.txt"       # [OPTIONAL] File with list of HDF5 files
+
+srun python -m hpc_inference.inference.detection.face_detect \
+    "${TARGET_DIR}" \
+    "${OUTPUT_DIR}" \
+    --input_type hdf5 \
+    --config "${CONFIG_FILE}" \
+    --file_list "${FILE_LIST}"  # [OPTIONAL] Use this if you have a specific list of files to process
+
+# Option 2: Use command line arguments (for quick testing)
+# Uncomment and modify the lines below, comment out the config version above
+#
+# srun python -m hpc_inference.inference.detection.face_detect \
+#     "${TARGET_DIR}" \
+#     "${OUTPUT_DIR}" \
+#     --input_type hdf5 \
+#     --model_weights "yolov8n-face.pt" \
+#     --confidence_threshold 0.5 \
+#     --image_size 1024 \
+#     --batch_size 16 \
+#     --num_workers 28 \
+#     --prefetch_factor 16 \
+#     --max_rows_per_file 10000 \
+#     --out_prefix "face_detection_results" \
+#     --evenly_distribute
+
+
+# -------------------------------
+# FACE DETECTION HDF5-SPECIFIC PARAMETERS
+# -------------------------------
+# --input_type hdf5:       Tells the script to process HDF5 files containing image data
+# --model_weights:         YOLO face detection model file:
+#                          - "yolov8n-face.pt" (fastest, least accurate)
+#                          - "yolov8s-face.pt" (balanced)
+#                          - "yolov8m-face.pt" (more accurate)
+#                          - "yolov8l-face.pt" (most accurate, slowest)
+# --confidence_threshold:  Minimum confidence score for face detections (0.0-1.0)
+#                          Lower = more detections (including false positives)
+#                          Higher = fewer, more confident detections
+# --file_list:             [OPTIONAL] Path to text file containing list of HDF5 files to process
+#                          Useful for processing specific subsets of data
+# --evenly_distribute:     Distribute files evenly based on size for better load balancing
+# --stagger:               [OPTIONAL] Stagger worker start times to reduce I/O congestion
+
+# HDF5 DATA REQUIREMENTS:
+# Your HDF5 files must follow this structure:
+# 1. A group named 'images' (default group name)
+# 2. Within the group, each image is a separate dataset named by its UUID
+# 3. Each dataset contains encoded image bytes (JPEG/PNG/WebP format)
+#
+# Structure: file.h5 -> images/ -> uuid1, uuid2, uuid3, ...
+# Each UUID dataset contains the encoded image bytes
+
+# OUTPUT FORMAT:
+# The script outputs Parquet files containing:
+# - uuid: Unique identifier for each image (from input HDF5)
+# - detection_score: Maximum confidence score for face detection (0.0 if no faces detected)
+# Files are saved in: {OUTPUT_DIR}/detections/rank_{rank}/
+
+# -------------------------------
+# SLURM Template Field Explanations
+# -------------------------------
+# --job-name:          Name for your job in the queue/monitoring system.
+# --nodes:             Number of nodes to allocate for the job.
+# --gpus-per-task:     Number of GPUs per task (set to 1 unless using model parallelism).
+# --cpus-per-task:     Number of CPU cores per task (should match or exceed your data loader workers).
+# --ntasks-per-node:   Number of parallel tasks per node.
+#                      For face detection, balance between available GPUs and I/O capacity.
+# --partition:         Cluster partition/queue to submit to (e.g., gpu, gpu-exp).
+# --time:              Maximum walltime for the job (format: HH:MM:SS).
+# --output:            Path for standard output log file (use %j for job ID).
+# --error:             Path for standard error log file.
+# --account:           Your allocation/project account for resource usage.
+
+# PERFORMANCE TIPS FOR FACE DETECTION ON HDF5:
+# - Face detection is typically faster than embedding, consider larger batch sizes
+# - Use --evenly_distribute for better load balancing across workers
+# - HDF5 provides efficient random access, excellent for large datasets
+# - Use --file_list to process specific subsets of your data efficiently
+# - Lower --confidence_threshold finds more faces but increases false positives
+# - Choose appropriate YOLO model size based on accuracy vs speed requirements
+# - Consider --stagger if experiencing I/O bottlenecks during startup
+# - HDF5 files with compression (gzip, lzf) and chunking perform best
+
+# YOLO MODEL DOWNLOAD:
+# YOLO models will be automatically downloaded on first use
+# Ensure internet connectivity or pre-download models to avoid delays during job execution
+# Consider pre-downloading before job:
+#   python -c "from ultralytics import YOLO; YOLO('yolov8n-face.pt')"
+
+# FILE_LIST FORMAT (if using --file_list):
+# Create a text file with one HDF5 file path per line:
+# /path/to/data/file1.h5
+# /path/to/data/file2.h5
+# /path/to/data/file3.h5
+
+# HDF5 FILE FORMAT ADVANTAGES:
+# - Efficient storage with compression support
+# - Fast random access to individual images
+# - Supports very large datasets (TB+)
+# - Memory-mapped access for reduced memory usage
+# - Can store metadata alongside images
+# - SWMR (Single Writer Multiple Reader) mode for concurrent access
+# - Hierarchical structure for organized data
+# - Excellent for archiving and sharing large image collections
+
+# FACE DETECTION USE CASES:
+# - Portrait photography filtering
+# - Social media image analysis
+# - Privacy-aware image processing
+# - Demographic studies (with appropriate consent)
+# - Security and surveillance applications
+# - Automated photo organization
+# - Quality control for face datasets

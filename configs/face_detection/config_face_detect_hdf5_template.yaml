@@ -1,0 +1,161 @@
+# =============================================================================
+# Configuration File for Batch Face Detection from HDF5 Files
+# =============================================================================
+# This configuration is optimized for face detection on HDF5 files containing
+# image data with metadata using YOLO models.
+# -----------------------------------------------------------------------------
+
+# ---------------------------
+# Model Configuration
+# ---------------------------
+# YOLO model for face detection
+model:
+  weights: yolov8n-face.pt  # YOLO face detection model weights
+                           # Options:
+                           # - yolov8n-face.pt (fastest, least accurate)
+                           # - yolov8s-face.pt (balanced)
+                           # - yolov8m-face.pt (more accurate)
+                           # - yolov8l-face.pt (most accurate, slowest)
+                           # Custom trained models are also supported
+                           # For more models, see:
+                           # https://github.com/akanametov/yolo-face?tab=readme-ov-file#models
+
+# ---------------------------
+# Detection Parameters
+# ---------------------------
+confidence_threshold: 0.5   # Minimum confidence score for face detections
+                            # Lower values = more detections (including false positives)
+                            # Higher values = fewer, more confident detections
+
+image_size: 1024            # Input image size for YOLO model (square format)
+                            # Larger sizes may improve detection accuracy but increase processing time
+
+# ---------------------------
+# Image Processing Settings
+# ---------------------------
+image_size: 1024            # Input image size for YOLO model (square)
+                            # Common values: 640, 1024, 1280
+                            # Larger sizes = more accurate but slower
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 16          # Number of images per batch (adjust based on GPU memory)
+num_workers: 28         # Number of worker processes for data loading
+prefetch_factor: 16     # Number of batches prefetched by each worker
+
+# ---------------------------
+# HDF5-Specific Settings
+# ---------------------------
+# HDF5 dataset structure requirements:
+# - Files contain a group named 'images' (default, configurable)
+# - Within the 'images' group, each image is stored as a separate dataset
+# - Dataset name = UUID (e.g., 'image_uuid_det123')
+# - Each dataset contains encoded image bytes (JPEG/PNG/WebP format)
+# - Structure: file['images']['uuid'] = encoded_image_bytes
+#
+# Example structure:
+# my_images.h5
+# └── images/              (group)
+#     ├── img_001          (dataset: encoded JPEG bytes)
+#     ├── img_002          (dataset: encoded PNG bytes)
+#     └── img_003          (dataset: encoded WebP bytes)
+# More details in the HDF5 DATA REQUIREMENTS section below.
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true  # Distribute files based on size for load balancing
+stagger: false           # Stagger worker start times to reduce I/O congestion
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_rows_per_file: 10000         # Maximum number of detection results per output file
+out_prefix: face_detection_results  # Prefix for output files
+
+# =============================================================================
+# USAGE EXAMPLES:
+# =============================================================================
+# 
+# For HDF5 files:
+# python face_detect.py /path/to/hdf5_dir /path/to/output --input_type hdf5 --config config_face_detect_hdf5_template.yaml
+#
+# With file list:
+# python face_detect.py /path/to/hdf5_dir /path/to/output --input_type hdf5 --file_list files.txt --config config_face_detect_hdf5_template.yaml
+# =============================================================================
+
+# =============================================================================
+# HDF5 DATA REQUIREMENTS:
+# =============================================================================
+# Your HDF5 files must follow this structure:
+# 1. A group named 'images' (default, or specify custom group_name)
+# 2. Within the group, each image is a separate dataset named by its UUID
+# 3. Each dataset contains encoded image bytes (JPEG/PNG/WebP format)
+#
+# Required structure:
+# file.h5
+# └── images/                    (group)
+#     ├── uuid1                  (dataset: encoded image bytes)
+#     ├── uuid2                  (dataset: encoded image bytes)
+#     └── uuid3                  (dataset: encoded image bytes)
+#
+# How to create compatible HDF5 files:
+# ```python
+# import h5py
+# from PIL import Image
+# import io
+# import numpy as np
+#
+# with h5py.File('output.h5', 'w') as f:
+#     images_group = f.create_group('images')
+#     
+#     # For each image:
+#     img = Image.open('photo.jpg')
+#     img_bytes = io.BytesIO()
+#     img.save(img_bytes, format='JPEG')
+#     
+#     # Store with UUID as dataset name
+#     images_group.create_dataset(
+#         'img_001',
+#         data=np.frombuffer(img_bytes.getvalue(), dtype=np.uint8)
+#     )
+# ```
+# =============================================================================
+
+# =============================================================================
+# OUTPUT FORMAT:
+# =============================================================================
+# The script outputs Parquet files containing:
+# - uuid: Unique identifier for each image (from input HDF5)
+# - detection_score: Maximum confidence score for face detection (0.0 if no faces detected)
+#
+# Files are saved in: {output_dir}/detections/rank_{rank}/
+# Example output:
+# face_detection_results_rank_0_0.parquet
+# face_detection_results_rank_0_1.parquet
+# ...
+# =============================================================================
+
+# =============================================================================
+# PERFORMANCE TUNING GUIDELINES:
+# =============================================================================
+# 
+# GPU Memory Optimization:
+# - Reduce batch_size if running out of GPU memory
+# - Face detection is typically less memory-intensive than embedding
+#
+# CPU/I-O Optimization:
+# - Increase num_workers for faster data loading (but watch CPU usage)
+# - Increase prefetch_factor for better pipeline utilization
+# - HDF5 files provide efficient random access for large datasets
+#
+# Distributed Processing:
+# - Use evenly_distribute=true for better load balancing
+# - Set stagger=true if experiencing I/O bottlenecks
+#
+# Detection Quality vs Speed:
+# - Lower confidence_threshold = more detections but more false positives
+# - Higher confidence_threshold = fewer but more reliable detections
+# - Choose appropriate YOLO model size based on accuracy vs speed needs
+# =============================================================================

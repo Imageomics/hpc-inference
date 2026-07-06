@@ -1,0 +1,142 @@
+# =============================================================================
+# Configuration File for Batch Face Detection from Image Folders
+# =============================================================================
+# This configuration is optimized for face detection on image files directly
+# from a directory structure using YOLO models.
+# -----------------------------------------------------------------------------
+
+# ---------------------------
+# Model Configuration
+# ---------------------------
+# YOLO model for face detection
+model:
+  weights: yolov8n-face.pt  # YOLO face detection model weights
+                           # Options:
+                           # - yolov8n-face.pt (fastest, least accurate)
+                           # - yolov8s-face.pt (balanced)
+                           # - yolov8m-face.pt (more accurate)
+                           # - yolov8l-face.pt (most accurate, slowest)
+                           # Custom trained models are also supported
+                           # For more models, see:
+                           # https://github.com/akanametov/yolo-face?tab=readme-ov-file#models
+
+# ---------------------------
+# Detection Parameters
+# ---------------------------
+confidence_threshold: 0.5   # Minimum confidence score for face detections
+                            # Lower values = more detections (including false positives)
+                            # Higher values = fewer, more confident detections
+
+image_size: 1024            # Input image size for YOLO model (square format)
+                            # Larger sizes may improve detection accuracy but increase processing time
+
+# ---------------------------
+# Image Processing Settings
+# ---------------------------
+image_size: 1024            # Input image size for YOLO model (square)
+                            # Common values: 640, 1024, 1280
+                            # Larger sizes = more accurate but slower
+
+# ---------------------------
+# DataLoader Configurations
+# ---------------------------
+batch_size: 16          # Number of images per batch (adjust based on GPU memory)
+num_workers: 28         # Number of worker processes for data loading
+prefetch_factor: 16     # Number of batches prefetched by each worker
+
+# ---------------------------
+# Image Processing Settings
+# ---------------------------
+validate_images: false  # Set to true to validate all images can be opened with PIL
+                        # Slower startup but catches corrupted files
+
+# How to generate unique IDs from image file paths
+uuid_mode: filename     # Options:
+                        # - "filename": image001.jpg
+                        # - "relative": subfolder/image001.jpg
+                        # - "fullpath": /full/path/to/image001.jpg
+                        # - "hash": MD5 hash of full path
+
+# ---------------------------
+# Distributed Processing
+# ---------------------------
+evenly_distribute: true  # Distribute files based on size for load balancing
+stagger: false           # Stagger worker start times to reduce file system load
+
+# ---------------------------
+# Output Configurations
+# ---------------------------
+max_rows_per_file: 10000         # Maximum number of detection results per output file
+out_prefix: face_detection_results  # Prefix for output files
+
+# =============================================================================
+# USAGE EXAMPLE:
+# =============================================================================
+# python face_detect.py /path/to/images /path/to/output --input_type images --config config_face_detect_image_folder_template.yaml
+# =============================================================================
+
+# =============================================================================
+# IMAGE DIRECTORY REQUIREMENTS:
+# =============================================================================
+# Your image directory can have any structure:
+#
+# Flat structure:
+# /images/
+#   ├── image001.jpg
+#   ├── image002.png
+#   └── image003.jpeg
+#
+# Nested structure:
+# /images/
+#   ├── category1/
+#   │   ├── img1.jpg
+#   │   └── img2.png
+#   └── category2/
+#       ├── img3.jpg
+#       └── img4.png
+#
+# Supported formats: .jpg, .jpeg, .png, .bmp, .tif, .tiff, .webp
+# All images are automatically converted to RGB mode for processing.
+#
+# UUID GENERATION MODES:
+# - filename: Good for flat directories with unique filenames
+# - relative: Good for nested directories where path info is important
+# - fullpath: Good when you need absolute path traceability
+# - hash: Good for very long paths or when you want anonymized IDs
+# =============================================================================
+
+# =============================================================================
+# OUTPUT FORMAT:
+# =============================================================================
+# The script outputs Parquet files containing:
+# - uuid: Unique identifier for each image (based on uuid_mode)
+# - detection_score: Maximum confidence score for face detection (0.0 if no faces detected)
+#
+# Files are saved in: {output_dir}/detections/rank_{rank}/
+# Example output:
+# face_detection_results_rank_0_0.parquet
+# face_detection_results_rank_0_1.parquet
+# ...
+# =============================================================================
+
+# =============================================================================
+# PERFORMANCE TUNING GUIDELINES:
+# =============================================================================
+# 
+# GPU Memory Optimization:
+# - Reduce batch_size if running out of GPU memory
+# - Face detection is typically less memory-intensive than embedding
+#
+# CPU/I-O Optimization:
+# - Increase num_workers for faster data loading (but watch CPU usage)
+# - Increase prefetch_factor for better pipeline utilization
+#
+# Distributed Processing:
+# - Use evenly_distribute=true for better load balancing
+# - Set stagger=true if experiencing file system bottlenecks
+#
+# Detection Quality vs Speed:
+# - Lower confidence_threshold = more detections but more false positives
+# - Higher confidence_threshold = fewer but more reliable detections
+# - Choose appropriate YOLO model size based on accuracy vs speed needs
+# =============================================================================
