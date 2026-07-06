@@ -2,8 +2,12 @@ name: Deploy MkDocs to GitHub Pages
 
 on:
   push:
-    branches: [ main, master, feature/doc_use_case ]
-  workflow_dispatch:
+    branches:
+      - main
+
+permissions:
+  pages: write
+  contents: write
 
 jobs:
   deploy:
