@@ -469,27 +469,89 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#use-cases" class="md-nav__link">
+    <nav class="md-nav" aria-label="Core Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iterative-pytorch-dataset" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Cases
+        Iterative PyTorch Dataset
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-links" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#batch-inference-job-scripts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Links
+        Batch Inference Job Scripts
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Batch Inference Job Scripts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-config-files-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Config Files (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Templates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Templates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slurm-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SLURM Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -757,27 +819,89 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#use-cases" class="md-nav__link">
+    <nav class="md-nav" aria-label="Core Features">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iterative-pytorch-dataset" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Use Cases
+        Iterative PyTorch Dataset
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#quick-links" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#batch-inference-job-scripts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Links
+        Batch Inference Job Scripts
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Batch Inference Job Scripts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Usage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#using-config-files-recommended" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Using Config Files (Recommended)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#templates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Templates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Templates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slurm-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SLURM Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -849,22 +973,91 @@
 <li><strong>Resource profiling:</strong> Logs timing metrics and CPU/GPU usage rates to help optimize your configuration</li>
 </ul>
 <h2 id="core-features">Core Features<a class="headerlink" href="#core-features" title="Permanent link">&para;</a></h2>
+<h3 id="iterative-pytorch-dataset">Iterative PyTorch Dataset<a class="headerlink" href="#iterative-pytorch-dataset" title="Permanent link">&para;</a></h3>
 <p>The <code>hpc_inference</code> package's core functionality includes customized PyTorch datasets:</p>
 <ul>
 <li><strong><code>ParquetImageDataset</code></strong> for image data stored as compressed binary columns across multiple large Parquet files</li>
 <li><strong><code>ImageFolderDataset</code></strong> for image data stored in folders using open file formats such as <code>JPG</code>, <code>PNG</code>, <code>TIFF</code>, etc.</li>
+<li><strong><code>HDF5ImageDataset</code></strong> for streaming image data from HDF5 files with built-in distributed processing support</li>
 </ul>
-<p>The package also comes with a suite of <strong>ready-to-use</strong> job scripts to perform efficient batch inference using pretrained models on HPCs.</p>
-<h2 id="use-cases">Use Cases<a class="headerlink" href="#use-cases" title="Permanent link">&para;</a></h2>
-<ol>
-<li><strong>Image Folder Dataset</strong> - Process images from directory structures</li>
-<li><strong>Parquet Dataset</strong> - Handle compressed image data in Parquet format</li>
-<li><strong>Large scale CLIP embedding</strong> - Generate embeddings for massive datasets</li>
-<li><strong>Large scale face detection</strong> - Detect faces across large image collections</li>
-<li><strong>Large scale animal detection</strong> - Use MegaDetector for wildlife analysis</li>
-<li><strong>Grid search profiling</strong> - Optimize processing parameters</li>
-</ol>
-<h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">hpc_inference.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParquetImageDataset</span><span class="p">,</span> <span class="n">ImageFolderDataset</span><span class="p">,</span> <span class="n">HDF5ImageDataset</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Parquet dataset</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">parquet_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/path/to/data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.parquet&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="n">parquet_dataset</span> <span class="o">=</span> <span class="n">ParquetImageDataset</span><span class="p">(</span><span class="n">parquet_files</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="n">preprocess</span><span class="p">)</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># Image folder dataset</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">image_folder_dataset</span> <span class="o">=</span> <span class="n">ImageFolderDataset</span><span class="p">(</span><span class="s2">&quot;/path/to/images&quot;</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="n">preprocess</span><span class="p">)</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># HDF5 dataset</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="n">hdf5_files</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;/path/to/data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;*.h5&quot;</span><span class="p">))</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="n">hdf5_dataset</span> <span class="o">=</span> <span class="n">HDF5ImageDataset</span><span class="p">(</span><span class="n">hdf5_files</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="n">preprocess</span><span class="p">)</span>
+</code></pre></div>
+<p>Use with PyTorch DataLoader for batch processing:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">hdf5_dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">for</span> <span class="n">batch_ids</span><span class="p">,</span> <span class="n">batch_tensors</span> <span class="ow">in</span> <span class="n">loader</span><span class="p">:</span>
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="c1"># Process batch</span>
+<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">embeddings</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">batch_tensors</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">))</span>
+</code></pre></div>
+<h3 id="batch-inference-job-scripts">Batch Inference Job Scripts<a class="headerlink" href="#batch-inference-job-scripts" title="Permanent link">&para;</a></h3>
+<p>Ready-to-use inference scripts for common tasks:</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command Module</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CLIP Embedding</td>
+<td><code>hpc_inference.inference.embed.open_clip_embed</code></td>
+<td>Generate embeddings with OpenCLIP models</td>
+</tr>
+<tr>
+<td>Face Detection</td>
+<td><code>hpc_inference.inference.detection.face_detect</code></td>
+<td>Detect faces using YOLO-based models</td>
+</tr>
+<tr>
+<td>Animal Detection</td>
+<td><code>hpc_inference.inference.detection.animal_detect</code></td>
+<td>Wildlife detection with MegaDetector</td>
+</tr>
+</tbody>
+</table>
+<h4 id="basic-usage">Basic Usage<a class="headerlink" href="#basic-usage" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>-m<span class="w"> </span>hpc_inference.inference.embed.open_clip_embed<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span>/path/to/input<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>/path/to/output<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span>--input_type<span class="w"> </span>parquet<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span>--model_name<span class="w"> </span>ViT-B-32<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span>--pretrained<span class="w"> </span>openai<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span>--batch_size<span class="w"> </span><span class="m">32</span><span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span>--num_workers<span class="w"> </span><span class="m">8</span>
+</code></pre></div>
+<h4 id="using-config-files-recommended">Using Config Files (Recommended)<a class="headerlink" href="#using-config-files-recommended" title="Permanent link">&para;</a></h4>
+<p>Config files are recommended for production workflows as they:</p>
+<ul>
+<li>Keep parameters organized and reproducible</li>
+<li>Allow easy sharing and version control</li>
+<li>Reduce command-line complexity</li>
+</ul>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>-m<span class="w"> </span>hpc_inference.inference.embed.open_clip_embed<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span>/path/to/input<span class="w"> </span>/path/to/output<span class="w"> </span><span class="se">\</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>--input_type<span class="w"> </span>parquet<span class="w"> </span>--config<span class="w"> </span>config.yaml
+</code></pre></div>
+<h3 id="templates">Templates<a class="headerlink" href="#templates" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Config templates</strong> → <a href="https://github.com/Imageomics/hpc-inference/tree/main/configs"><code>configs/</code></a> (e.g., <code>config_embed_parquet_template.yaml</code>, <code>config_embed_hdf5_template.yaml</code>)</li>
+<li><strong>SLURM job templates</strong> → <a href="https://github.com/Imageomics/hpc-inference/tree/main/scripts"><code>scripts/</code></a> (e.g., <code>open_clip_embed_parquet_template.slurm</code>)</li>
+</ul>
+<h4 id="slurm-integration">SLURM Integration<a class="headerlink" href="#slurm-integration" title="Permanent link">&para;</a></h4>
+<p>The datasets automatically detect <code>SLURM_PROCID</code> and <code>SLURM_NTASKS</code> to distribute files across ranks. Use <code>srun</code> in your SLURM scripts to scale across multiple nodes.</p>
 <h2 id="acknowledgement">Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permanent link">&para;</a></h2>
 <p>This project is a joint effort between the <a href="https://imageomics.osu.edu/">Imageomics Institute</a> and the <a href="https://www.biodiversityai.org/">ABC Global Center</a>.</p>
 
