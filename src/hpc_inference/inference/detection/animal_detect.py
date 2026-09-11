@@ -173,13 +173,13 @@ def main(
         h5_files = []
         
         if file_list is None:
-            h5_files = [str(p) for p in target_path.rglob('*.h5')]
+            h5_files = [str(p) for p in target_path.rglob('*.h5')] + [str(p) for p in target_path.rglob('*.hdf5')]
             logging.info(f"Found {len(h5_files)} HDF5 files in {target_dir}")
         else:
             file_list_path = Path(file_list)
             if file_list_path.exists():
                 with open(file_list_path, "r") as f:
-                    h5_files = [line.strip() for line in f if line.strip().endswith('.h5')]
+                    h5_files = [line.strip() for line in f if line.strip().endswith(('.h5', '.hdf5'))]
                 logging.info(f"Loaded {len(h5_files)} HDF5 files from {file_list}")
             else:
                 raise FileNotFoundError(f"File list not found: {file_list}")
@@ -339,8 +339,9 @@ if __name__ == "__main__":
     parser.add_argument("--read_columns", type=str, nargs="+", 
                         default=["uuid", "original_size", "resized_size", "image"],
                         help="Columns to read from Parquet files (only for --input_type parquet)")
-    parser.add_argument("--evenly_distribute", action="store_true", default=True,
-                        help="Distribute files evenly based on size (recommended for better load balancing)")
+    parser.add_argument("--evenly_distribute", action=argparse.BooleanOptionalAction, default=True,
+                        help="Distribute files evenly based on size (recommended for better load balancing); "
+                             "use --no-evenly_distribute to disable")
     parser.add_argument("--stagger", action="store_true", 
                         help="Stagger worker start times")
     

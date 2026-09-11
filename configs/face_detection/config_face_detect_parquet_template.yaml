@@ -26,9 +26,6 @@ confidence_threshold: 0.5   # Minimum confidence score for face detections
                             # Lower values = more detections (including false positives)
                             # Higher values = fewer, more confident detections
 
-image_size: 1024            # Input image size for YOLO model (square format)
-                            # Larger sizes may improve detection accuracy but increase processing time
-
 # ---------------------------
 # Image Processing Settings
 # ---------------------------

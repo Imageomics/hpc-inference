@@ -28,14 +28,14 @@ OUTPUT_DIR="/path/to/your/output_dir"          # [REQUIRED] Directory to save fa
 # === Choose your configuration method ===
 # Option 1: Use config file (RECOMMENDED for production)
 CONFIG_FILE="/path/to/your/face_detect_parquet_config.yaml"  # Path to YAML config file
-FILE_LIST="/path/to/your/file_list.txt"        # [OPTIONAL] File with list of Parquet files
+# FILE_LIST="/path/to/your/file_list.txt"        # [OPTIONAL] File with list of Parquet files
 
 srun python -m hpc_inference.inference.detection.face_detect \
     "${TARGET_DIR}" \
     "${OUTPUT_DIR}" \
     --input_type parquet \
-    --config "${CONFIG_FILE}" \
-    --file_list "${FILE_LIST}"  # [OPTIONAL] Use this if you have a specific list of files to process
+    --config "${CONFIG_FILE}"
+    # --file_list "${FILE_LIST}"  # [OPTIONAL] Uncomment (and add a trailing backslash above) to process a specific list of files
 
 # Option 2: Use command line arguments (for quick testing)
 # Uncomment and modify the lines below, comment out the config version above
