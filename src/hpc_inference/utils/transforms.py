@@ -108,7 +108,7 @@ def letterbox(
     elif scaleFill:
         # Scale to fill entire new_shape, ignore aspect ratio
         dw, dh = 0, 0
-        new_unpad = new_shape
+        new_unpad = (new_shape[1], new_shape[0])  # (width, height), like above
         r = new_shape[1] / shape[1], new_shape[0] / shape[0]
 
     # Divide padding by 2 for symmetric padding

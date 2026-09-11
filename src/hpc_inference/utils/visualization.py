@@ -59,15 +59,21 @@ def reverse_letterbox_coords(
     scaled_w = int(round(orig_w * scale_ratio))
     scaled_h = int(round(orig_h * scale_ratio))
     
-    # Calculate the padding added
+    # Calculate the padding added on the left/top. letterbox() splits the total
+    # padding as left = round(dw - 0.1), right = round(dw + 0.1) (same for
+    # top/bottom), so for an odd total the left/top side gets the smaller half.
+    # Mirror that rounding exactly; using the raw half would shift every
+    # restored coordinate by half a pixel whenever the padding is odd.
     pad_w = (letterbox_w - scaled_w) / 2
     pad_h = (letterbox_h - scaled_h) / 2
+    pad_left = int(round(pad_w - 0.1))
+    pad_top = int(round(pad_h - 0.1))
     
     # Remove padding from coordinates
-    x1_unpadded = x1 - pad_w
-    y1_unpadded = y1 - pad_h
-    x2_unpadded = x2 - pad_w
-    y2_unpadded = y2 - pad_h
+    x1_unpadded = x1 - pad_left
+    y1_unpadded = y1 - pad_top
+    x2_unpadded = x2 - pad_left
+    y2_unpadded = y2 - pad_top
     
     # Scale back to original image size
     x1_original = x1_unpadded / scale_ratio
@@ -267,11 +273,12 @@ def plot_detections_pil(
         >>> result_img = plot_detections_pil(img, detections)
         >>> result_img.save("detection_results.jpg")
     """
-    # Convert to PIL Image if needed
+    # Convert to PIL Image if needed (read the array shape first: a PIL image
+    # has no .shape attribute)
     if isinstance(image, np.ndarray):
-        image = Image.fromarray(image)
         if original_shape is None:
             original_shape = (image.shape[0], image.shape[1])
+        image = Image.fromarray(image)
     else:
         if original_shape is None:
             original_shape = (image.height, image.width)
@@ -370,7 +377,7 @@ def save_detection_visualization(
     letterbox_shape: Tuple[int, int] = (1280, 1280),
     confidence_threshold: float = 0.2,
     use_matplotlib: bool = False,
-    **kwargs
+    **kwargs: Any
 ) -> None:
     """
     Save detection visualization to file.
