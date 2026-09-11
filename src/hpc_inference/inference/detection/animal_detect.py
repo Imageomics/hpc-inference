@@ -322,8 +322,8 @@ if __name__ == "__main__":
                         help="File containing list of Parquet or HDF5 files to process (only for --input_type parquet or hdf5)")
     
     # Model configuration arguments (used when no config file provided)
-    parser.add_argument("--model_weights", type=str, default="md_v5a.0.0.pt", 
-                        help="YOLO model weights file (default: md_v5a.0.0.pt - MegaDetector v5a)")
+    parser.add_argument("--model_weights", type=str, default="MDV6-yolov10-e-1280.pt", 
+                        help="YOLO model weights file (default: MDV6-yolov10-e-1280.pt - MegaDetector v6)")
     parser.add_argument("--confidence_threshold", type=float, default=0.2,
                         help="Confidence threshold for animal detection (default: 0.2)")
     parser.add_argument("--image_size", type=int, default=1280,

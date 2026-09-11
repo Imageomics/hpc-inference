@@ -10,17 +10,11 @@
 # ---------------------------
 # MegaDetector model for animal detection
 model:
-  weights: md_v5a.0.0.pt      # MegaDetector model weights
-                              # Options:
-                              # - md_v5a.0.0.pt (MegaDetector v5a, recommended)
-                              # - md_v5b.0.0.pt (MegaDetector v5b, alternative)
-                              # - yolov8n.pt (YOLOv8 nano, general purpose)
-                              # - yolov8s.pt (YOLOv8 small, balanced)
-                              # - yolov8m.pt (YOLOv8 medium, more accurate)
-                              # - yolov8l.pt (YOLOv8 large, most accurate)
-                              # Custom trained models are also supported
-                              # For MegaDetector models, see:
-                              # https://github.com/microsoft/CameraTraps
+  weights: MDV6-yolov10-e-1280.pt      # MegaDetector model weights (v6, YOLOv10-x, recommended)
+                                       # Download from the Pytorch-Wildlife model zoo:
+                                       # https://microsoft.github.io/MegaDetector/model_zoo/
+                                       # Other Ultralytics-loadable weights (e.g. yolov8*.pt) or
+                                       # custom trained models are also supported.
 
 # ---------------------------
 # Detection Parameters
@@ -188,7 +182,7 @@ out_prefix: animal_detection_results  # Prefix for output files
 # - Lower thresholds may find more animals but increase false positives
 # - Higher image_size improves accuracy but slows processing
 # - Choose appropriate model based on accuracy vs speed needs:
-#   * md_v5a.0.0.pt: Best for wildlife/camera trap images
+#   * MDV6-yolov10-e-1280.pt (MegaDetector v6): Best for wildlife/camera trap images
 #   * YOLOv8 variants: General purpose object detection
 #
 # Model-Specific Notes:

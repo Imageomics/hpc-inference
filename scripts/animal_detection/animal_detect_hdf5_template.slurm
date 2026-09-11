@@ -44,7 +44,7 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 #     "${TARGET_DIR}" \
 #     "${OUTPUT_DIR}" \
 #     --input_type hdf5 \
-#     --model_weights "md_v5a.0.0.pt" \
+#     --model_weights "MDV6-yolov10-e-1280.pt" \
 #     --confidence_threshold 0.2 \
 #     --image_size 1280 \
 #     --batch_size 8 \
@@ -60,12 +60,10 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 # -------------------------------
 # --input_type hdf5:       Tells the script to process HDF5 files containing image data
 # --model_weights:         Animal detection model file:
-#                          - "md_v5a.0.0.pt" (MegaDetector v5a, recommended for wildlife)
-#                          - "md_v5b.0.0.pt" (MegaDetector v5b, alternative)
-#                          - "yolov8n.pt" (YOLOv8 nano, fastest)
-#                          - "yolov8s.pt" (YOLOv8 small, balanced)
-#                          - "yolov8m.pt" (YOLOv8 medium, more accurate)
-#                          - "yolov8l.pt" (YOLOv8 large, most accurate)
+#                          Download available models from:
+#                          https://microsoft.github.io/MegaDetector/model_zoo/
+#                          MegaDetectorV6-Ultralytics-YoloV10-Extra (MDV6-yolov10-e-1280.pt) is recommended
+#                          Other Ultralytics-loadable weights (e.g. yolov8*.pt) are also supported
 # --confidence_threshold:  Minimum confidence score for animal detections (0.0-1.0)
 #                          MegaDetector typically uses 0.2 as optimal threshold
 #                          Lower = more detections (including false positives)
@@ -139,9 +137,8 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 
 # MODEL DOWNLOAD AND CACHING:
 # - Models will be automatically downloaded to ~/.cache/ultralytics/ on first use
-# - MegaDetector models are larger than standard YOLO models (~400MB vs ~50MB)
-# - Consider pre-downloading models before job execution:
-#   python -c "from ultralytics import YOLO; YOLO('md_v5a.0.0.pt')"
+# - MegaDetector weights are not auto-downloaded by Ultralytics; pre-download them:
+#   wget https://zenodo.org/records/15398270/files/MDV6-yolov10-e-1280.pt?download=1
 
 # FILE_LIST FORMAT (if using --file_list):
 # Create a text file with one HDF5 file path per line:

@@ -42,7 +42,7 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 #     "${TARGET_DIR}" \
 #     "${OUTPUT_DIR}" \
 #     --input_type images \
-#     --model_weights "md_v5a.0.0.pt" \
+#     --model_weights "MDV6-yolov10-e-1280.pt" \
 #     --confidence_threshold 0.2 \
 #     --image_size 1280 \
 #     --batch_size 8 \
@@ -61,7 +61,7 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 # --input_type images:     Tells the script to process image files from a directory
 # --model_weights:         Animal detection model file:
 #                          Download available models from:
-#                          https://microsoft.github.io/CameraTraps/model_zoo/megadetector
+#                          https://microsoft.github.io/MegaDetector/model_zoo/
 #                          MegaDetectorV6-Ultralytics-YoloV10-Extra is recommended for best performance
 #                          
 # --confidence_threshold:  Minimum confidence score for animal detections (0.0-1.0)
@@ -131,7 +131,7 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 # - Consider --uuid_mode based on your downstream analysis needs
 
 # MEGADETECTOR MODEL NOTES:
-# - Pytorch Wildlife model zoos: https://microsoft.github.io/CameraTraps/model_zoo/megadetector/
+# - Pytorch Wildlife model zoos: https://microsoft.github.io/MegaDetector/model_zoo/
 # - MegaDetector is specifically designed for wildlife camera trap images
 # - Trained on millions of camera trap images from around the world
 # - Detects animals and people with high accuracy

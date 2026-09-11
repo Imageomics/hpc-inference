@@ -90,7 +90,7 @@ The **ENA24 Detection Dataset**[^3] is a wildlife camera trap dataset collected 
 
 ### Download Model Weights
 
-Check out the [Model Zoo](https://microsoft.github.io/CameraTraps/model_zoo/megadetector/) to compare different Megadetector model releases. In this post, we'll use the most capable model `MDV6-yolov10-e`. 
+Check out the [Model Zoo](https://microsoft.github.io/MegaDetector/model_zoo/) to compare different Megadetector model releases. In this post, we'll use the most capable model `MDV6-yolov10-e`. 
 
 ```bash
 cd ~/animal_detection

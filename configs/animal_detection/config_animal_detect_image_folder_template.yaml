@@ -11,7 +11,7 @@
 # MegaDetector model for animal detection
 model:
   weights: MDV6-yolov10-e-1280.pt      # MegaDetector model weights
-                                       # https://microsoft.github.io/CameraTraps/model_zoo/megadetector/
+                                       # https://microsoft.github.io/MegaDetector/model_zoo/
 
 # ---------------------------
 # Detection Parameters
