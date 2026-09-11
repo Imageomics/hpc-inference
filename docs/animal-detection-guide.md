@@ -1,10 +1,12 @@
 # Animal Detection Guide
 
-This guide covers how to perform animal detection on large image datasets using MegaDetector[^1] [^2]. MegaDetector is specifically trained for wildlife camera trap images.
+This guide covers how to perform animal detection on large image datasets using MegaDetector[^1] [^2]. The MegaDetector v6 weights used in this guide are trained and distributed by the Pytorch-Wildlife team at the Microsoft AI for Good Lab[^4]. MegaDetector is specifically trained for wildlife camera trap images.
 
 [^1]: Beery, S., Morris, D., & Yang, S. MegaDetector. GitHub repository: https://github.com/agentmorris/MegaDetector
 
 [^2]: Microsoft AI for Earth. CameraTraps: Tools for training and running detectors and classifiers for wildlife camera trap images. GitHub repository: https://github.com/microsoft/CameraTraps
+
+[^4]: Miao, Z., Hernández, A. A., Vargas, L. F., Chacón, I. D., Ruiz, D., & Chalmers, C. (2025). Pytorch-wildlife-model-weights [Data set]. Microsoft AI for Good Lab. Zenodo. https://doi.org/10.5281/zenodo.15398270
 
 ## Overview
 
@@ -13,7 +15,7 @@ The animal detection module provides high-performance batch processing of images
 ### Key Features
 
 - **MegaDetector Support**: Optimized for [Pytorch-Wildlife-model-weights](https://zenodo.org/records/15398270), specifically, the Megadetector models designed for wildlife camera trap images.
-- **Multiple Input Types**: Process image directories or Parquet datasets
+- **Multiple Input Types**: Process image directories, Parquet datasets, or HDF5 datasets
 - **Distributed Processing**: Multi-GPU and multi-node support via SLURM
 - **Efficient Data Pipeline**: Optimized data loading with prefetching and parallel processing
 - **Comprehensive Output**: Detailed detection results with confidence scores and bounding boxes
@@ -56,7 +58,7 @@ The **ENA24 Detection Dataset**[^3] is a wildlife camera trap dataset collected 
     from huggingface_hub import snapshot_download
 
     # Download the ENA24 subset (~1GB)
-    data_dir = "~/animal_detection/camera_trap_data"
+    data_dir = Path("~/animal_detection/camera_trap_data").expanduser()
 
     snapshot_download(
         repo_id="imageomics/IDLE-OO-Camera-Traps",
@@ -107,7 +109,7 @@ wget -O model/megadetector/MDV6-yolov10-e-1280.pt "https://zenodo.org/records/15
 
 ### Basic Usage
 
-Let's perform face detection inference using `MDV6-yolov10-e`. We'll specify the target & output directory, input types & model weights location. Please make sure your machine has GPU available when you run this example.
+Let's perform animal detection inference using `MDV6-yolov10-e`. We'll specify the target & output directory, input types & model weights location. Please make sure your machine has GPU available when you run this example.
 
 ```bash
 # Using command line arguments
@@ -311,7 +313,7 @@ cd ~/animal_detection
 mkdir scripts
 nano scripts/animal_detect_single_process.slurm
 ```
-Paste the content below to `configs/animal_detect_config.yaml`. Make sure to replace the `partition` & `account` based on your HPC credentials. Also replace the virtual environment placeholder with the absolute path to your virtual environment. 
+Paste the content below to `scripts/animal_detect_single_process.slurm`. Make sure to replace the `partition` & `account` based on your HPC credentials. Also replace the virtual environment placeholder with the absolute path to your virtual environment. 
 ```bash
 #!/bin/bash
 #SBATCH --job-name=animal_detect_single_process
@@ -346,7 +348,7 @@ cat ~/animal_detection/scripts/animal_detect_single_process.slurm
 Using this SLURM script, we'll perform the inference pipeline on **one** compute node allocated with 1 GPU & 48 CPUs. Now let's submit the SLURM job
 
 ```bash
-cd ~/animal_detetction
+cd ~/animal_detection
 sbatch scripts/animal_detect_single_process.slurm
 ```
 
@@ -410,7 +412,7 @@ srun python -m hpc_inference.inference.detection.animal_detect \
 Using this SLURM script, we'll perform the inference pipeline on **4** compute nodes allocated with 1 GPU & 48 CPUs per node. Now let's submit the SLURM job
 
 ```bash
-cd ~/animal_detetction
+cd ~/animal_detection
 sbatch scripts/animal_detect_multi_processes.slurm
 ```
 
@@ -529,7 +531,9 @@ plot_detections_matplotlib(
     title=f"Detections for {image_uuid}"
 )
 ```
-![Image 00170382-1e3d-4d46-9243-ac78136922ba.png with bounding box overlay for detection, original image from](imgs/detection_box.png)
+![Detection bounding box overlaid on camera trap image 00170382-1e3d-4d46-9243-ac78136922ba.png](imgs/detection_box.png)
+
+*Original image `00170382-1e3d-4d46-9243-ac78136922ba.png` from the ENA24 subset[^3] of [IDLE-OO-Camera-Traps](https://huggingface.co/datasets/imageomics/IDLE-OO-Camera-Traps); bounding box drawn by `plot_detections_matplotlib`.*
 
 !!!note
     Notice we specified `letterbox_shape=(1280, 1280)` for the `letterbox_shape` argument. This matches the default `image_size: 1280` used during preprocessing for MegaDetector in our script. 
@@ -575,9 +579,9 @@ prefetch_factor: 2     # Less prefetching
 evenly_distribute: true # Better load balancing
 ```
 
-If possible, use more processors to reduce the risk of OOM crashing. 
+If possible, allocate more CPU cores to each process; on most clusters the memory allocation scales with the core count:
 ```bash
-#SBATCH --ntasks-per-node=64  # Use 64 cores per task, increase RAM
+#SBATCH --cpus-per-task=64  # More cores (and memory) per process
 ```
 
 

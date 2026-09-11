@@ -129,7 +129,8 @@ out_prefix: animal_detection_results  # Prefix for output files
 # - Consider using smaller image_size if memory is limited
 #
 # CPU/I-O Optimization:
-# - Increase num_workers for faster data loading & prevent OOM crashes
+# - Increase num_workers for faster data loading (each worker adds memory
+#   pressure; reduce num_workers / prefetch_factor if workers get OOM-killed)
 # - Increase prefetch_factor for better pipeline utilization
 #
 # Distributed Processing:

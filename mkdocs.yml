@@ -10,7 +10,7 @@ nav:
   - Getting Started: getting-started.md
   - User Guide:
     - ImageFolder Dataset: imagefolder-guide.md
-    - Animal Detction: animal-detection-guide.md
+    - Animal Detection: animal-detection-guide.md
     - GPU Utilization Metrics: utilization-metrics.md
   - API Reference: api-reference.md
 
