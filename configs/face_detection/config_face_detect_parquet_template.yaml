@@ -49,9 +49,10 @@ read_batch_size: 128    # Number of rows to read from Parquet at a time
 # Columns to read from Parquet files (must exist in your data)
 read_columns:
   - uuid              # [REQUIRED] Unique identifier for each image
-  - image             # [REQUIRED] Encoded image bytes (JPEG, PNG, etc.)
-  - original_size     # [OPTIONAL] Original image dimensions
-  - resized_size      # [OPTIONAL] Resized image dimensions
+  - image             # [REQUIRED] Raw uint8 pixel buffer (H*W*3 bytes, BGR channel order), NOT an encoded JPEG/PNG
+  - original_size     # [REQUIRED*] [height, width] of the stored pixel buffer
+  - resized_size      # [REQUIRED*] [height, width] of the stored buffer if resized before storing
+                      # *at least one size column must match the buffer; the reader tries original_size, then resized_size
 
 # ---------------------------
 # Distributed Processing
@@ -81,30 +82,31 @@ out_prefix: face_detection_results  # Prefix for output files
 # =============================================================================
 # Your Parquet files must contain:
 # 1. 'uuid' column: Unique string identifier for each image
-# 2. 'image' column: Image data encoded as bytes (from PIL Image.save() to BytesIO)
-# 3. Optional metadata columns as specified in read_columns
+# 2. 'image' column: raw uint8 pixel bytes (height*width*3) in BGR channel order;
+#    hpc_inference.utils.common.decode_image reshapes the buffer with the size column
+#    and flips BGR->RGB. Encoded JPEG/PNG bytes are NOT decoded and will be rejected.
+# 3. 'original_size' and/or 'resized_size' column: [height, width] matching the pixel buffer
 #
 # Example of creating compatible Parquet data:
 # ```python
-# import io
+# import numpy as np
 # from PIL import Image
 # import pandas as pd
-# import pyarrow.parquet as pq
-# 
-# # Encode image to bytes
-# img = Image.open('image.jpg')
-# img_bytes = io.BytesIO()
-# img.save(img_bytes, format='JPEG')
-# img_bytes = img_bytes.getvalue()
-# 
-# # Create DataFrame
+#
+# # Decode the image to a raw uint8 pixel buffer. The reader expects BGR
+# # channel order (it flips to RGB on load), so reverse the channel axis.
+# img = np.asarray(Image.open('image.jpg').convert('RGB'))
+# h, w = img.shape[:2]
+# img_bytes = img[..., ::-1].tobytes()          # H*W*3 bytes, BGR
+#
+# # Create DataFrame (size columns are [height, width] of the stored buffer)
 # df = pd.DataFrame({
 #     'uuid': ['img_001'],
 #     'image': [img_bytes],
-#     'original_size': [(1024, 768)],
-#     'resized_size': [(640, 640)]
+#     'original_size': [[h, w]],
+#     'resized_size': [[h, w]],   # dims of the stored buffer if you resized before storing
 # })
-# 
+#
 # # Save to Parquet
 # df.to_parquet('images.parquet')
 # ```
