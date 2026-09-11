@@ -18,7 +18,10 @@ class AnimalDetector(BaseDetector):
     and bounding box coordinates.
     """
     
-    # MegaDetector class names
+    # Fallback class names (MegaDetector convention), used only when the loaded
+    # model does not carry its own class-name mapping. Results normally use
+    # ``result.names`` so general-purpose YOLO weights (e.g. COCO: 0=person)
+    # are labeled correctly.
     CLASS_NAMES = {
         0: "animal",
         1: "person",
@@ -45,8 +48,8 @@ class AnimalDetector(BaseDetector):
                         "bbox": [x1, y1, x2, y2],          # Absolute pixel coordinates (float)
                         "bbox_normalized": [x1, y1, x2, y2], # Normalized coordinates 0-1 (float)
                         "confidence": float,                 # Detection confidence score (0.0-1.0)
-                        "class_id": int,                    # Numeric class ID (0=animal, 1=person, 2=vehicle)
-                        "class_name": str                   # Human-readable class name
+                        "class_id": int,                    # Numeric class ID (model-dependent; MegaDetector: 0=animal, 1=person, 2=vehicle)
+                        "class_name": str                   # Human-readable class name from the model's label map
                     },
                     # ... more detections
                 ]
@@ -62,14 +65,14 @@ class AnimalDetector(BaseDetector):
                             "bbox": [120.5, 80.2, 340.8, 290.1],
                             "bbox_normalized": [0.118, 0.078, 0.333, 0.284],
                             "confidence": 0.85,
-                            "class_id": 1,
+                            "class_id": 0,
                             "class_name": "animal"
                         },
                         {
                             "bbox": [450.0, 200.0, 600.0, 400.0],
                             "bbox_normalized": [0.440, 0.195, 0.586, 0.391],
                             "confidence": 0.72,
-                            "class_id": 2,
+                            "class_id": 1,
                             "class_name": "person"
                         }
                     ]
@@ -84,8 +87,11 @@ class AnimalDetector(BaseDetector):
         if not self.is_loaded():
             raise RuntimeError("Model not loaded. Call load_model() first.")
             
-        # Run inference on the entire batch at once
-        results = self.model(images, verbose=False)
+        # Run inference on the entire batch at once. The threshold MUST be passed
+        # to the model: Ultralytics applies its own default cutoff (0.25) inside
+        # NMS, so filtering only afterwards would silently drop detections between
+        # conf_threshold and 0.25.
+        results = self.model(images, conf=conf_threshold, verbose=False)
         
         # Process detection results
         batch_results = []
@@ -95,6 +101,9 @@ class AnimalDetector(BaseDetector):
                 "detections": [],
                 "num_detections": 0
             }
+            # Class-name mapping carried by the loaded model (MegaDetector or any
+            # other YOLO weights); fall back to the MegaDetector convention.
+            class_names = getattr(result, "names", None) or self.CLASS_NAMES
             
             if result.boxes is not None and len(result.boxes) > 0:
                 # Extract detection data
@@ -131,7 +140,7 @@ class AnimalDetector(BaseDetector):
                             ],
                             "confidence": float(conf),
                             "class_id": int(class_id),
-                            "class_name": self.CLASS_NAMES.get(int(class_id), "unknown")
+                            "class_name": class_names.get(int(class_id), "unknown")
                         }
                         image_result["detections"].append(detection)
             

@@ -30,8 +30,11 @@ class FaceDetector(BaseDetector):
         if not self.is_loaded():
             raise RuntimeError("Model not loaded. Call load_model() first.")
             
-        # Run inference on the entire batch at once
-        results = self.model(images, verbose=False)
+        # Run inference on the entire batch at once. Pass the threshold to the
+        # model: Ultralytics applies its own default cutoff (0.25) inside NMS, so
+        # a caller-supplied threshold below that could not be honored by
+        # filtering afterwards.
+        results = self.model(images, conf=conf_threshold, verbose=False)
         
         # Process detection scores
         detection_scores = []
