@@ -81,19 +81,20 @@ class ImageFolderDataset(IterableDataset):
 
         self.uuid_mode = uuid_mode
 
+    
     def generate_uuid(self, img_path: str) -> str:
         """Generate a UUID from an image path using the configured mode."""
         if self.uuid_mode == "filename":
             return os.path.basename(img_path)
 
-        elif self.uuid_mode == "relative":
+        if self.uuid_mode == "relative":
             parent_dir = os.path.dirname(self.image_dir)
             return os.path.relpath(img_path, parent_dir)
 
-        elif self.uuid_mode == "fullpath":
+        if self.uuid_mode == "fullpath":
             return img_path
 
-        elif self.uuid_mode == "hash":
+        if self.uuid_mode == "hash":
             import hashlib
             return hashlib.md5(img_path.encode()).hexdigest()[:16]
 
