@@ -66,22 +66,20 @@ class ImageFolderDataset(IterableDataset):
         return valid_files
 
     
+    
     def _init_uuid_generator(
         self,
         uuid_mode: Literal["filename", "relative", "fullpath", "hash"],
     ) -> None:
         """Initialize the UUID generation mode."""
         valid_modes = {"filename", "relative", "fullpath", "hash"}
-
         if uuid_mode not in valid_modes:
             raise ValueError(
                 f"Invalid uuid_mode: {uuid_mode}. "
                 "Valid options: 'filename', 'relative', 'fullpath', 'hash'"
             )
-
         self.uuid_mode = uuid_mode
 
-    
     def generate_uuid(self, img_path: str) -> str:
         """Generate a UUID from an image path using the configured mode."""
         if self.uuid_mode == "filename":
