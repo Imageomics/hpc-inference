@@ -65,22 +65,39 @@ class ImageFolderDataset(IterableDataset):
                 logging.warning(f"... and {len(invalid_files) - 5} more invalid files")
         return valid_files
 
-    def _init_uuid_generator(self, uuid_mode: Literal["filename", "relative", "fullpath", "hash"]) -> None:
-        """Initialize the UUID generation function based on the specified mode."""
-        if uuid_mode == "filename":
-            self.generate_uuid = lambda img_path: os.path.basename(img_path)
-        elif uuid_mode == "relative":
-            # Calculate relative path from parent of image_dir to preserve folder structure
+    
+    def _init_uuid_generator(
+        self,
+        uuid_mode: Literal["filename", "relative", "fullpath", "hash"],
+    ) -> None:
+        """Initialize the UUID generation mode."""
+        valid_modes = {"filename", "relative", "fullpath", "hash"}
+
+        if uuid_mode not in valid_modes:
+            raise ValueError(
+                f"Invalid uuid_mode: {uuid_mode}. "
+                "Valid options: 'filename', 'relative', 'fullpath', 'hash'"
+            )
+
+        self.uuid_mode = uuid_mode
+
+    def generate_uuid(self, img_path: str) -> str:
+        """Generate a UUID from an image path using the configured mode."""
+        if self.uuid_mode == "filename":
+            return os.path.basename(img_path)
+
+        elif self.uuid_mode == "relative":
             parent_dir = os.path.dirname(self.image_dir)
-            self.generate_uuid = lambda img_path: os.path.relpath(img_path, parent_dir)
-        elif uuid_mode == "fullpath":
-            self.generate_uuid = lambda img_path: img_path
-        elif uuid_mode == "hash":
+            return os.path.relpath(img_path, parent_dir)
+
+        elif self.uuid_mode == "fullpath":
+            return img_path
+
+        elif self.uuid_mode == "hash":
             import hashlib
-            self.generate_uuid = lambda img_path: hashlib.md5(img_path.encode()).hexdigest()[:16]
-        else:
-            raise ValueError(f"Invalid uuid_mode: {uuid_mode}. "
-                        f"Valid options: 'filename', 'relative', 'fullpath', 'hash'")
+            return hashlib.md5(img_path.encode()).hexdigest()[:16]
+
+        raise ValueError(f"Unsupported uuid_mode: {self.uuid_mode}")
 
     def __init__(
         self, 
