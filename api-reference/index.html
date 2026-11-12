@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../imgs/Imageomics_ABC.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.8.1">
     
     
       
@@ -31,10 +31,10 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.57a0d79d.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.fb2fffe2.min.css">
       
       
 
@@ -744,6 +744,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#hpc_inference.datasets.ImageFolderDataset.generate_uuid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_uuid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hpc_inference.datasets.ImageFolderDataset.parse_image" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1293,6 +1304,17 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#hpc_inference.datasets.ImageFolderDataset.generate_uuid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        generate_uuid
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#hpc_inference.datasets.ImageFolderDataset.parse_image" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1808,8 +1830,8 @@ for batch_uuids, batch_tensors in loader:
 <blockquote>
 <p>from open_clip import create_model_and_transforms
 from hpc_inference.datasets import HDF5ImageDataset
-<em>, preprocess1 = create_model_and_transforms("ViT-B-32", pretrained="openai")
-</em>, preprocess2 = create_model_and_transforms("ViT-L-14", pretrained="openai")
+_, preprocess1 = create_model_and_transforms("ViT-B-32", pretrained="openai")
+_, preprocess2 = create_model_and_transforms("ViT-L-14", pretrained="openai")
 dataset = HDF5ImageDataset(
     hdf5_files,
     preprocess={"model1": preprocess1, "model2": preprocess2}
@@ -1863,7 +1885,7 @@ dataset = HDF5ImageDataset(
 
 
 <h4 id="hpc_inference.datasets.HDF5ImageDataset.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">hdf5_files</span><span class="p">,</span> <span class="n">group_name</span><span class="o">=</span><span class="s1">&#39;images&#39;</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color_mode</span><span class="o">=</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stagger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">processed_files_log</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">hdf5_files</span><span class="p">,</span> <span class="n">group_name</span><span class="o">=</span><span class="s1">'images'</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color_mode</span><span class="o">=</span><span class="s1">'RGB'</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stagger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">processed_files_log</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#hpc_inference.datasets.HDF5ImageDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 
@@ -2296,7 +2318,7 @@ Supports multi-worker data loading within each rank.</p>
 
 
 <h4 id="hpc_inference.datasets.ImageFolderDataset.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">image_dir</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color_mode</span><span class="o">=</span><span class="s1">&#39;RGB&#39;</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stagger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">uuid_mode</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">image_dir</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color_mode</span><span class="o">=</span><span class="s1">'RGB'</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">stagger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">uuid_mode</span><span class="o">=</span><span class="s1">'filename'</span><span class="p">)</span></code>
 
 <a href="#hpc_inference.datasets.ImageFolderDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 
@@ -2516,6 +2538,24 @@ Supports multi-worker data loading within each rank.</p>
 <div class="doc doc-object doc-function">
 
 
+<h4 id="hpc_inference.datasets.ImageFolderDataset.generate_uuid" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">generate_uuid</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span></code>
+
+<a href="#hpc_inference.datasets.ImageFolderDataset.generate_uuid" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Generate a UUID from an image path using the configured mode.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h4 id="hpc_inference.datasets.ImageFolderDataset.parse_image" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">parse_image</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span></code>
 
@@ -2635,7 +2675,7 @@ Returns True if valid, False otherwise.</p>
 
 
 <h4 id="hpc_inference.datasets.ParquetEmbeddingDataset.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">parquet_files</span><span class="p">,</span> <span class="n">col_uuid</span><span class="o">=</span><span class="s1">&#39;uuid&#39;</span><span class="p">,</span> <span class="n">col_embedding</span><span class="o">=</span><span class="s1">&#39;embedding&#39;</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">read_batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">read_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stagger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_tensor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">parquet_files</span><span class="p">,</span> <span class="n">col_uuid</span><span class="o">=</span><span class="s1">'uuid'</span><span class="p">,</span> <span class="n">col_embedding</span><span class="o">=</span><span class="s1">'embedding'</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">read_batch_size</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">read_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stagger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_tensor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
 <a href="#hpc_inference.datasets.ParquetEmbeddingDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 
@@ -2976,7 +3016,7 @@ Supports multi-worker data loading within each rank.</p>
 
 
 <h4 id="hpc_inference.datasets.ParquetImageDataset.__init__" class="doc doc-heading">
-            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">parquet_files</span><span class="p">,</span> <span class="n">col_uuid</span><span class="o">=</span><span class="s1">&#39;uuid&#39;</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">decode_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">read_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stagger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">processed_files_log</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">parquet_files</span><span class="p">,</span> <span class="n">col_uuid</span><span class="o">=</span><span class="s1">'uuid'</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">world_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">decode_fn</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">preprocess</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">read_batch_size</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">read_columns</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">stagger</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">processed_files_log</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 <a href="#hpc_inference.datasets.ParquetImageDataset.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
 
@@ -3688,12 +3728,12 @@ This is useful for large datasets where some files may be significantly larger t
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/path/file1.parquet&quot;</span><span class="p">,</span> <span class="s2">&quot;/path/file2.parquet&quot;</span><span class="p">,</span> <span class="s2">&quot;/path/file3.parquet&quot;</span><span class="p">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"/path/file1.parquet"</span><span class="p">,</span> <span class="s2">"/path/file2.parquet"</span><span class="p">,</span> <span class="s2">"/path/file3.parquet"</span><span class="p">]</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">assign_files_to_rank</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">[&quot;/path/file1.parquet&quot;, &quot;/path/file3.parquet&quot;]</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">["/path/file1.parquet", "/path/file3.parquet"]</span>
 </code></pre></div>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">assign_files_to_rank</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="n">evenly_distribute</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> 
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">[&quot;/path/file2.parquet&quot;]</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">["/path/file2.parquet"]</span>
 </code></pre></div>
 
 
@@ -3874,7 +3914,7 @@ when working with datasets that can be split by index ranges.</p>
 
 
 <h3 id="hpc_inference.utils.decode_image" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">decode_image</span><span class="p">(</span><span class="n">row_data</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s1">&#39;pil&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">decode_image</span><span class="p">(</span><span class="n">row_data</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s1">'pil'</span><span class="p">)</span></code>
 
 <a href="#hpc_inference.utils.decode_image" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -3992,12 +4032,12 @@ and either an "original_size" or "resized_size" key specifying the (height, widt
 </details>
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;image&quot;</span><span class="p">:</span> <span class="n">image_bytes</span><span class="p">,</span> <span class="s2">&quot;original_size&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)}</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">decode_image</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;pil&quot;</span><span class="p">)</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"image"</span><span class="p">:</span> <span class="n">image_bytes</span><span class="p">,</span> <span class="s2">"original_size"</span><span class="p">:</span> <span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">)}</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">img</span> <span class="o">=</span> <span class="n">decode_image</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">"pil"</span><span class="p">)</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">Image</span><span class="p">)</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">True</span>
 </code></pre></div>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">img_array</span> <span class="o">=</span> <span class="n">decode_image</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">&quot;numpy&quot;</span><span class="p">)</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">img_array</span> <span class="o">=</span> <span class="n">decode_image</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">return_type</span><span class="o">=</span><span class="s2">"numpy"</span><span class="p">)</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">img_array</span><span class="o">.</span><span class="n">shape</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">(224, 224, 3)</span>
 </code></pre></div>
@@ -4077,11 +4117,11 @@ and either an "original_size" or "resized_size" key specifying the (height, widt
 
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">format_time</span><span class="p">(</span><span class="mf">3661.5</span><span class="p">)</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">&#39;1h 1m 1.50s&#39;</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="go">'1h 1m 1.50s'</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">format_time</span><span class="p">(</span><span class="mf">125.67</span><span class="p">)</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">&#39;2m 5.67s&#39;</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="go">'2m 5.67s'</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">format_time</span><span class="p">(</span><span class="mf">45.23</span><span class="p">)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">&#39;45.23s&#39;</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">'45.23s'</span>
 </code></pre></div>
 
 
@@ -4255,8 +4295,8 @@ environment variables (SLURM, torchrun, etc.).</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;batch_size&quot;</span><span class="p">])</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s2">"config.yaml"</span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">config</span><span class="p">[</span><span class="s2">"batch_size"</span><span class="p">])</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="go">32</span>
 </code></pre></div>
 
@@ -4415,11 +4455,11 @@ numbers, dicts, and lists - not PIL Image objects.</p>
 
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">batch</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;img1.jpg&quot;</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))),</span> 
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">... </span>          <span class="p">(</span><span class="s2">&quot;img2.jpg&quot;</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">,</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)))]</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">batch</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">"img1.jpg"</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">))),</span> 
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">... </span>          <span class="p">(</span><span class="s2">"img2.jpg"</span><span class="p">,</span> <span class="n">Image</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"RGB"</span><span class="p">,</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)))]</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">uuids</span><span class="p">,</span> <span class="n">images</span> <span class="o">=</span> <span class="n">pil_image_collate</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">uuids</span><span class="p">)</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">[&#39;img1.jpg&#39;, &#39;img2.jpg&#39;]</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="go">['img1.jpg', 'img2.jpg']</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">([</span><span class="n">img</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">images</span><span class="p">])</span>
 <a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="go">[(100, 100), (200, 200)]</span>
 </code></pre></div>
@@ -4433,7 +4473,7 @@ numbers, dicts, and lists - not PIL Image objects.</p>
 
 
 <h3 id="hpc_inference.utils.save_emb_to_parquet" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">save_emb_to_parquet</span><span class="p">(</span><span class="n">uuids</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;zstd&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">save_emb_to_parquet</span><span class="p">(</span><span class="n">uuids</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">'zstd'</span><span class="p">)</span></code>
 
 <a href="#hpc_inference.utils.save_emb_to_parquet" class="headerlink" title="Permanent link">&para;</a></h3>
 
@@ -4558,12 +4598,12 @@ Other options: "snappy", "gzip", "brotli", "lz4", "uncompressed".</p>
 
 
 <p><span class="doc-section-title">Examples:</span></p>
-    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">uuids</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;img_001&quot;</span><span class="p">,</span> <span class="s2">&quot;img_002&quot;</span><span class="p">,</span> <span class="s2">&quot;img_003&quot;</span><span class="p">]</span>
+    <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">uuids</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"img_001"</span><span class="p">,</span> <span class="s2">"img_002"</span><span class="p">,</span> <span class="s2">"img_003"</span><span class="p">]</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">embeddings</span> <span class="o">=</span> <span class="p">{</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">... </span>    <span class="s2">&quot;clip_emb&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">... </span>    <span class="s2">&quot;resnet_emb&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2048</span><span class="p">)</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">... </span>    <span class="s2">"clip_emb"</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">512</span><span class="p">),</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">... </span>    <span class="s2">"resnet_emb"</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2048</span><span class="p">)</span>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">... </span><span class="p">}</span>
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">save_emb_to_parquet</span><span class="p">(</span><span class="n">uuids</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="s2">&quot;embeddings.parquet&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">save_emb_to_parquet</span><span class="p">(</span><span class="n">uuids</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="s2">"embeddings.parquet"</span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -4862,10 +4902,10 @@ Any opinions, findings, conclusions, or recommendations expressed in this materi
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.view", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["content.action.view", "content.code.copy", "navigation.tabs", "navigation.tabs.sticky", "navigation.sections", "navigation.expand", "navigation.top", "search.highlight"], "search": "../assets/javascripts/workers/search.a7633da7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.a5f9d56c.min.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
